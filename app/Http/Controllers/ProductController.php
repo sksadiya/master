@@ -12,21 +12,67 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::latest();
-
-        if (!empty($request->get('search'))) {
-            $products = $products->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+        return view('product.index');
+    }
+    public function getProducts(Request $request)
+    {
+        $query = Product::with('category')->latest();
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('name', 'like', "%{$searchValue}%")
+            ->orWhere('unit_price','like',"%{$searchValue}%")
+            ->orWhereHas('category', function($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%");
             });
         }
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'name' => 'name',
+                'category' => 'category_id',
+                'price' => 'unit_price',
+            ];
 
-        $perPage = $request->get('perPage', 20);
-        $products = $products->paginate($perPage);
-
-        return view('product.index', compact('products'));
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $products = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $products->map(function ($product) {
+                return [
+                    'name' => $product->name,
+                    'category' => $product->category->name,
+                    'price' => $product->unit_price,
+                    'action' =>'<div class="justify-content-end d-flex gap-2">
+          <div class="edit">
+          <a href="'. route('product.edit',$product->id) .'" class="btn btn-sm btn-success edit-item-btn" ><i class="bx bxs-pencil"></i> Edit</a>
+          </div>
+          <div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#productDeleteModal" data-id="'. $product->id .'"><i class="bx bx-trash"></i>
+          Delete</button>
+          </div>
+        </div>',
+                ];
+            })
+        ]);
     }
-
     public function create()
     {
         $categories = Category::all();

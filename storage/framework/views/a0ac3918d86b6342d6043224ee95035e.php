@@ -24,90 +24,26 @@ Clients
                 <a href="<?php echo e(route('client.add')); ?>" type="button" class="btn btn-primary add-btn"><i class="bx bx-plus-circle me-2"></i> Add Client</a>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="<?php echo e(route('clients')); ?>" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="<?php echo e(request()->get('search')); ?>" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="<?php echo e(route('clients')); ?>" type="button" class="btn bg-primary text-light">reset</a>
-
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap display" id="clientsTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="client-name">Name</th>
-                  <th class="sort" data-sort="client-business">Business Name</th>
-                  <th class="sort" data-sort="client-contact">Contact</th>
-                  <th class="sort" data-sort="client-invoices-count">Invoices</th>
-                  <th class="sort" data-sort="client-services-count">Services</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Name</th>
+                  <th>Business Name</th>
+                  <th>Contact</th>
+                  <th>Invoices</th>
+                  <th>Services</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                <?php if($clients): ?>
-          <?php $__currentLoopData = $clients; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $client): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <tr>
-        <td class="client-name"><a href="<?php echo e(route('client.show',$client->id)); ?>"><?php echo e($client->first_name); ?>
-
-          <?php echo e($client->last_name); ?></a></td>
-        <td class="client-business"><?php echo e($client->business); ?></td>
-        <td class="client-contact"><?php echo e($client->contact); ?></td>
-        <td class="client-invoices-count"><?php echo e($client->invoices_count); ?></td>
-        <td class="client-services-count"><?php echo e($client->services_count); ?></td>
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="<?php echo e(route('client.edit', $client->id)); ?>" class="btn btn-sm btn-success edit-item-btn"><i
-          class="bx bxs-pencil"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#confirmationModal" data-id="<?php echo e($client->id); ?>"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        <?php else: ?>
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    <?php endif; ?>
+               
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                <?php echo e($clients->links()); ?>
-
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item client-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item client-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item client-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item client-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
+         
         </div>
       </div>
     </div>
@@ -177,18 +113,25 @@ Clients
   <?php endif; ?>
 
   $(document).ready(function () {
-    $('.dropdown-item.client-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '<?php echo e($clients->url($clients->currentPage())); ?>' + '&perPage=' + perPage;
-      window.location.href = url;
+    $('#clientsTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '<?php echo e(route("clients.data")); ?>', 
+            type: 'GET',
+        },
+        columns: [
+            { data: 'name', name: 'first_name' },
+            { data: 'business', name: 'business' },
+            { data: 'contact', name: 'contact' },
+            { data: 'invoices_count', name: 'invoices_count' },
+            { data: 'services_count', name: 'services_count' },
+            { data: 'action', name: 'action', orderable: false, searchable: false }
+        ],
+        // order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+        pageLength: 10
     });
-    var clientsList = new List('clientsList', {
-      valueNames: ['client-name', 'client-business', 'client-contact', 'client-invoices-count',
-        'client-services-count', 'action'],
-    });
-
-    $('.remove-item-btn').on('click', function () {
+    $('#clientsTable').on('click', '.remove-item-btn',function () {
       var clientId = $(this).data('id');
       $('#delete-record').data('id', clientId);
     });

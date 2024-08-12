@@ -25,81 +25,22 @@ Departments
                   data-bs-target="#addDepartmentModel"><i class="bx bx-plus-circle me-2"></i> Add department</button>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="<?php echo e(route('departments')); ?>" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="<?php echo e(request()->get('search')); ?>" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="<?php echo e(route('departments')); ?>" type="button" class="btn bg-primary text-light">reset</a>
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="departmentTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="department-name">Department</th>
-                  <th class="sort" data-sort="employee-count">Employees</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Department</th>
+                  <th>Employees</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                <?php if($departments): ?>
-          <?php $__currentLoopData = $departments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $department): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <tr>
-        <td class="department-name"><?php echo e($department->name); ?></td>
-        <td class="employee-count"><?php echo e($department->employees_count); ?></td>
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editDepartmentModel" data-id="<?php echo e($department->id); ?>"
-          data-name="<?php echo e($department->name); ?>" data-description="<?php echo e($department->description); ?>"><i class="bx bxs-pencil"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteRecordModal" data-id="<?php echo e($department->id); ?>"><i class="bx bx-trash"></i> Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        <?php else: ?>
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    <?php endif; ?>
+                
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                <?php echo e($departments->links()); ?>
-
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item department-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item department-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item department-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item department-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -205,24 +146,34 @@ Departments
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="<?php echo e(URL::asset('build/libs/prismjs/prism.js')); ?>"></script>
-<script src="<?php echo e(URL::asset('build/libs/list.js/list.min.js')); ?>"></script>
-<script src="<?php echo e(URL::asset('build/libs/list.pagination.js/list.pagination.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/libs/sweetalert2/sweetalert2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
   $(document).ready(function () {
-
-    $('.dropdown-item.department-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '<?php echo e($departments->url($departments->currentPage())); ?>' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-    var departmentList = new List('departmentList', {
-      valueNames: ['department-name', 'employee-count','action'],
-    });
+    $('#departmentTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '<?php echo e(route('departments.data')); ?>',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'name', name: 'name' },
+        { data: 'employees_count', name: 'employees_count' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
+    
     $('#addDepartmentForm').on('submit', function (e) {
       e.preventDefault();
 
@@ -274,7 +225,7 @@ Departments
       $('.form-control').removeClass('is-invalid');
       $('.invalid-feedback').text('');
     });
-    $('.edit-item-btn').on('click', function () {
+    $('#departmentTable').on('click', '.edit-item-btn' ,function () {
       var deptId = $(this).data('id');
       var deptName = $(this).data('name');
       var deptDes = $(this).data('description');
@@ -352,7 +303,7 @@ Departments
       $('.invalid-feedback').text('');
     });
 
-    $('.remove-item-btn').on('click', function () {
+    $('#departmentTable').on('click', '.remove-item-btn' ,function () {
       var deptId = $(this).data('id');
       $('#delete-record').data('id', deptId);
       $('#deleteRecordModal').modal('show');

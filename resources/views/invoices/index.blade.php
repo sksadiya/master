@@ -29,113 +29,30 @@ Invoices
               </div>
             </div>
             <div class="col-sm">
-              <form method="GET" action="{{ route('invoices') }}" id="searchForm">
                 <div class="d-flex justify-content-sm-end">
                 <a href="{{ route('exportInvoices') }}" type="button" class="btn btn-outline-success btn-border me-2">PDF Export</a>
                 <a href="{{ route('export-invoices') }}" type="button" class="btn btn-outline-success btn-border">Excel Export</a>
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="{{ request()->get('search') }}" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="" type="button" class="btn bg-primary text-light">reset</a>
                 </div>
-              </form>
             </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="invoiceTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="invoice-number">Invoice</th>
-                  <th class="sort" data-sort="invoice-client">Client</th>
-                  <th class="sort" data-sort="invoice-total">Total Amount</th>
-                  <th class="sort" data-sort="invoice-due">Due Amount</th>
-                  <th class="sort" data-sort="invoice-status">Status</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Invoice</th>
+                  <th>Client</th>
+                  <th>Total Amount</th>
+                  <th>Due Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                @if($invoices)
-          @foreach($invoices as $invoice)
-        <tr>
-        <td class="invoice-number"><a
-          href="{{ route('invoice.show', $invoice->id) }}">{{ $invoice->invoice_number}}</a></td>
-        <td class="invoice-client"><a
-          href="{{ route('client.show', $invoice->client->id)}}">{{ $invoice->client->first_name}}
-          {{ $invoice->client->last_name}}</a></td>
-        <td class="invoice-total">₹{{ $invoice->total }}</td>
-        <td class="invoice-due">₹{{ $invoice->due_amount }}</td>
-        <td class="invoice-status">
-        @if($invoice->invoice_status == 'Unpaid')
-      <span class="badge bg-danger-subtle text-danger badge-border">
-        {{ $invoice->invoice_status }}
-      </span>
-    @elseif($invoice->invoice_status == 'Paid')
-    <span class="badge bg-success-subtle text-success badge-border">
-      {{ $invoice->invoice_status }}
-    </span>
-  @elseif($invoice->invoice_status == 'Partially_Paid')
-  <span class="badge bg-secondary-subtle text-secondary badge-border">
-    {{ $invoice->invoice_status }}
-  </span>
-@elseif($invoice->invoice_status == 'Overdue')
-  <span class="badge bg-primary-subtle text-primary badge-border">
-    {{ $invoice->invoice_status }}
-  </span>
-@elseif($invoice->invoice_status == 'Processing')
-  <span class="badge bg-info-subtle text-info badge-border">
-    {{ $invoice->invoice_status }}
-  </span>
-@else
-  <span class="badge bg-warning-subtle text-warning badge-border">
-    {{ $invoice->invoice_status }}
-  </span>
-@endif
-        </td>
-
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="{{ route('invoice.edit', $invoice->id)}}"
-          class="btn btn-sm btn-success edit-item-btn"><i class="bx bxs-pencil"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#invoiceDeleteModal" data-id="{{ $invoice->id }}"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      @endforeach
-        @endif
+              
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                {{ $invoices->links() }}
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item invoice-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item invoice-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item invoice-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item invoice-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -231,8 +148,6 @@ Invoices
 
 @section('script')
 <script src="{{ URL::asset('build/libs/prismjs/prism.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.pagination.js/list.pagination.min.js') }}"></script>
 <script src="{{ URL::asset('build/select2/js/select2.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
@@ -266,6 +181,33 @@ Invoices
   @endif
 
   $(document).ready(function () {
+
+    $('#invoiceTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('invoices.data') }}',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'invoice', name: 'invoice_number' },
+        { data: 'client', name: 'client' },
+        { data: 'total', name: 'total' },
+        { data: 'due', name: 'due_amount' },
+        { data: 'status', name: 'invoice_status' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'desc']],
+    pageLength: 10
+});
+
     $('#addPaymentModal').on('shown.bs.modal', function () {
       $('#invoice').select2({
         dropdownParent: $('#addPaymentModal') // Ensure dropdown is appended to modal
@@ -324,19 +266,7 @@ Invoices
       $('.invalid-feedback').text('');
     });
 
-    $('.dropdown-item.invoice-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '{{ $invoices->url($invoices->currentPage()) }}' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-
-    var invoiceList = new List('invoiceList', {
-      valueNames: ['invoice-number', 'invoice-client', 'invoice-total', 'invoice-due',
-        'invoice-status', 'action'],
-    });
-
-    $('.remove-item-btn').on('click', function () {
+    $('#invoiceTable').on('click', '.remove-item-btn', function () {
       var invoiceID = $(this).data('id');
       $('#delete-record').data('id', invoiceID);
     });

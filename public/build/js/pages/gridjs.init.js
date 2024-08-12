@@ -11,6 +11,7 @@ if (document.getElementById("table-gridjs"))
     new gridjs.Grid({
         columns: [{
                 name: 'ID',
+                
                 width: '80px',
                 formatter: (function (cell) {
                     return gridjs.html('<span class="fw-semibold">' + cell + '</span>');

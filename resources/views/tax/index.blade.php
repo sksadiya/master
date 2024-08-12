@@ -25,89 +25,22 @@ Taxes
                   data-bs-target="#addTaxModal"><i class="bx bx-plus-circle me-2"></i> Add Tax</button>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="{{ route('taxes') }}" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="{{ request()->get('search') }}" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="{{ route('taxes') }}" type="button" class="btn bg-primary text-light">reset</a>
-
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
             <table class="table align-middle table-nowrap" id="taxTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="tax-name">Tax Name</th>
-                  <th class="sort" data-sort="tax-value">Tax Percentage</th>
-                  <th class="sort" data-sort="tax-default">Default</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Tax Name</th>
+                  <th>Tax Percentage</th>
+                  <th>Default</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                @if($taxes)
-          @foreach ($taxes as $tax)
-        <tr>
-        <td class="tax-name">{{ $tax->name }}</td>
-        <td class="tax-value">{{ $tax->value }}%</td>
-        <td class="tax-default">
-        <div class="form-check form-switch">
-          <input class="form-check-input default-toggle-input" type="checkbox" role="switch"
-          onclick="setDefault({{ $tax->id }})" {{ ($tax->is_default == 1) ? 'checked' : '' }}>
-          <label class="form-check-label" for="is_default"></label>
-        </div>
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editTaxModal" data-id="{{ $tax->id }}" data-name="{{ $tax->name }}"
-          data-value="{{ $tax->value }}"><i class="bx bxs-pencil"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteTaxModal" data-id="{{ $tax->id }}"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      @endforeach
-        @else
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    @endif
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                {{ $taxes->links() }}
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item tax-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item tax-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item tax-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item tax-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -222,10 +155,7 @@ Taxes
 @endsection
 
 @section('script')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ URL::asset('build/libs/prismjs/prism.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.pagination.js/list.pagination.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 <script>
@@ -272,15 +202,29 @@ Taxes
         }
       });
     }
-    $('.dropdown-item.tax-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '{{ $taxes->url($taxes->currentPage()) }}' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-    var taxesList = new List('taxesList', {
-      valueNames: ['tax-name', 'tax-value', 'tax-default', 'action'],
-    });
+    $('#taxTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('taxes.data') }}',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'name', name: 'name' },
+        { data: 'value', name: 'value' },
+        { data: 'default', name: 'default' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
     $('#addTaxForm').on('submit', function (e) {
       e.preventDefault();
 
@@ -330,7 +274,7 @@ Taxes
       $('.form-control').removeClass('is-invalid');
       $('.invalid-feedback').text('');
     });
-    $('.edit-item-btn').on('click', function () {
+    $('#taxTable').on('click','.edit-item-btn', function () {
       var taxId = $(this).data('id');
       var taxName = $(this).data('name');
       var taxValue = $(this).data('value');
@@ -404,7 +348,7 @@ Taxes
       $('.invalid-feedback').text('');
     });
 
-    $('.remove-item-btn').on('click', function () {
+    $('#taxTable').on('click', '.remove-item-btn',function () {
       var taxId = $(this).data('id');
       $('#delete-record').data('id', taxId);
       $('#deleteTaxModal').modal('show');

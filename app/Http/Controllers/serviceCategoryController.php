@@ -10,15 +10,77 @@ class serviceCategoryController extends Controller
 {
 
          public function index(Request $request) {
-        $categories = serviceCategory::latest();
+        // $categories = serviceCategory::withCount('clients')->latest();
 
-        if (!empty($request->get('search'))) {
-            $categories = $categories->where('name', 'like', '%' . $request->get('search') . '%');
-        }
-        $perPage = $request->get('perPage', 20); 
-        $categories = $categories->paginate($perPage);
-        return view('service_categories.index', compact('categories'));
+        // if (!empty($request->get('search'))) {
+        //     $categories = $categories->where('name', 'like', '%' . $request->get('search') . '%');
+        // }
+        // $perPage = $request->get('perPage', 20); 
+        // $categories = $categories->paginate($perPage);
+        return view('service_categories.index');
     }
+    
+    public function getServiceCategories(Request $request)
+    {
+        try {
+            $query = serviceCategory::withCount('clients')->latest();
+        
+            if ($request->has('search') && !empty($request->get('search')['value'])) {
+                $searchValue = $request->get('search')['value'];
+                $query->where(function ($query) use ($searchValue) {
+                    $query->where('name', 'like', "%{$searchValue}%");
+                });
+            }
+        
+            if ($request->has('order')) {
+                $columnIndex = $request->get('order')[0]['column'];
+                $columnName = $request->get('columns')[$columnIndex]['data'];
+                $direction = $request->get('order')[0]['dir'];
+    
+                // Map DataTable columns to database columns
+                $columnMap = [
+                    'name' => 'name',
+                    'clients_count' => 'clients_count',
+                ];
+    
+                if (array_key_exists($columnName, $columnMap)) {
+                    $query->orderBy($columnMap[$columnName], $direction);
+                }
+            }
+        
+            $perPage = $request->get('length', 10);
+            $page = $request->get('start', 0) / $perPage;
+            $totalRecords = $query->count();
+        
+            $serviceCategories = $query->skip($page * $perPage)->take($perPage)->get();
+        
+            return response()->json([
+                'draw' => intval($request->get('draw')),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $totalRecords,
+                'data' => $serviceCategories->map(function ($category) {
+                    return [
+                        'name' => $category->name,
+                        'clients_count' => $category->clients_count,
+                        'action' => '<div class="justify-content-end d-flex gap-2">
+                                    <div class="edit">
+                                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editServiceCategoryModal" data-id="'. $category->id .'"
+                                    data-name="'. $category->name .'"><i class="bx bxs-pencil"></i> Edit</button>
+                                    </div>
+                                    <div class="remove">
+                                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="bx bx-trash"></i> Delete</button>
+                                    </div>
+                                    </div>'
+                    ];
+                })
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred.'], 500);
+        }
+    }
+    
 
     public function store(Request $request)
 {

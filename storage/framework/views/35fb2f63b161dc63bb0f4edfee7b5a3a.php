@@ -37,74 +37,74 @@
                 <li class="menu-title"><span><?php echo app('translator')->get('translation.menu'); ?></span></li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('root')); ?>" >
-                        <i class="ri-dashboard-2-line"></i> <span>Dashboard</span>
+                    <i class="fas fa-circle-notch"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('clients')); ?>" >
-                        <i class="ri-folder-user-line"></i> <span>Clients</span>
+                    <i class="fas fa-users"></i> <span>Clients</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('serviceCategories')); ?>" >
-                        <i class="ri-folder-user-line"></i> <span>Service Categories</span>
+                    <i class="fas fa-layer-group"></i> <span>Service Categories</span>
                     </a>
                 </li>
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Departments')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('departments')); ?>" >
-                        <i class="ri-file-user-line"></i> <span>Departments</span>
+                    <i class="fas fa-grip-vertical"></i> <span>Departments</span>
                     </a>
                 </li>
                 <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('employees')); ?>" >
-                        <i class="ri-file-user-line"></i> <span>Employees</span>
+                    <i class="fas fa-user-tie"></i> <span>Employees</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('invoices')); ?>" >
-                    <i class="ri-file-list-3-line"></i> <span>Invoices</span>
+                    <i class="fas fa-file-invoice"></i> <span>Invoices</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('payments')); ?>" >
-                    <i class="ri-currency-line"></i> <span>Payments</span>
+                    <i class="fas fa-dollar-sign"></i> <span>Payments</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('categories')); ?>" >
-                    <i class="ri-apps-2-line"></i> <span>Categories</span>
+                    <i class="fas fa-sitemap"></i> <span>Categories</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('taxes')); ?>" >
-                    <i class="ri-money-dollar-circle-line"></i> <span>Taxes</span>
+                    <i class="fas fa-coins"></i> <span>Taxes</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('products')); ?>" >
-                    <i class="ri-product-hunt-line"></i> <span>Products</span>
+                    <i class="fas fa-tag"></i> <span>Products</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('expenseCategories')); ?>" >
-                    <i class="ri-product-hunt-line"></i> <span>Expense Categories</span>
+                    <i class="fas fa-network-wired"></i> <span>Expense Categories</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('expenses')); ?>" >
-                    <i class="ri-product-hunt-line"></i> <span>Expenses</span>
+                    <i class="fas fa-list"></i> <span>Expenses</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('app-settings')); ?>" >
-                    <i class="ri-settings-2-line"></i> <span>Settings</span>
+                    <i class="fas fa-wrench"></i> <span>Settings</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('roles')); ?>" >
-                    <i class="ri-settings-2-line"></i> <span>Roles & Permissions</span>
+                    <i class="fas fa-key"></i> <span>Roles & Permissions</span>
                     </a>
                 </li>
             </ul>

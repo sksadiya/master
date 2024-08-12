@@ -10,15 +10,71 @@ use Illuminate\Support\Facades\Session;
 class taxController extends Controller
 {
     public function index(Request $request) {
-        $taxes = Tax::latest();
-
-        if (!empty($request->get('search'))) {
-            $taxes = $taxes->where('name', 'like', '%' . $request->get('search') . '%');
-            $taxes = $taxes->where('value', 'like', '%' . $request->get('search') . '%');
+        return view('tax.index');
+    }
+    public function getTaxes(Request $request)
+    {
+        $query = Tax::latest();
+    
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('value', 'like',"%{$searchValue}%");
         }
-        $perPage = $request->get('perPage', 20); 
-        $taxes = $taxes->paginate($perPage);
-        return view('tax.index', compact('taxes'));
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'name' => 'name',
+                'value' => 'value',
+            ];
+
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $taxes = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $taxes->map(function ($tax) {
+                return [
+                    'name' => $tax->name,
+                    'value' => $tax->value,
+                    'default' => '<div class="form-check form-switch">
+                                <input class="form-check-input default-toggle-input" type="checkbox" role="switch"
+                                    id="default-switch-' . $tax->id . '"
+                                    onclick="setDefault(' . $tax->id . ')" ' . ($tax->is_default ? 'checked' : '') . '>
+                                <label class="form-check-label" for="default-switch-' . $tax->id . '"></label>
+                            </div>',
+                    'action' => '<div class="justify-content-end d-flex gap-2">
+          <div class="edit">
+          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+          data-bs-target="#editTaxModal" data-id="'. $tax->id .'" data-name="'. $tax->name .'"
+          data-value="'. $tax->value .'"><i class="bx bxs-pencil"></i> Edit</button>
+          </div>
+          <div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#deleteTaxModal" data-id="'. $tax->id .'"><i class="bx bx-trash"></i>
+          Delete</button>
+          </div>
+        </div>'
+                ];
+            })
+        ]);
     }
     public function store(Request $request)
 {

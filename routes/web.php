@@ -32,10 +32,12 @@ Route::post('/save-settings', [App\Http\Controllers\SettingsController::class, '
 Route::get('app-settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('app-settings');
 
 Route::get('categories', [App\Http\Controllers\categoryController::class, 'index'])->name('categories');
+Route::get('categories/data', [App\Http\Controllers\categoryController::class, 'getData'])->name('categories.data');
 Route::post('categories', [App\Http\Controllers\categoryController::class, 'store'])->name('category.add');
 Route::put('/categories/{id}', [App\Http\Controllers\categoryController::class, 'update'])->name('category.update');
 Route::delete('/categories/{id}', [App\Http\Controllers\categoryController::class, 'destroy'])->name('category.delete');
 
+Route::get('expenseCategory/data', [App\Http\Controllers\expenseCategoryController::class, 'getExpenseCategories'])->name('expenseCategories.data');
 Route::get('expenseCategory', [App\Http\Controllers\expenseCategoryController::class, 'index'])->name('expenseCategories');
 Route::post('expenseCategory', [App\Http\Controllers\expenseCategoryController::class, 'store'])->name('expenseCategory.add');
 Route::put('/expenseCategories/{id}', [App\Http\Controllers\expenseCategoryController::class, 'update'])->name('expenseCategory.update');
@@ -44,24 +46,30 @@ Route::delete('/expenseCategories/{id}', [App\Http\Controllers\expenseCategoryCo
 Route::group(['middleware' => ['permission:View Departments']], function () {
   Route::get('departments', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
 });
-
+Route::get('departments/data', [App\Http\Controllers\DepartmentController::class, 'getDepartments'])->name('departments.data');
 Route::post('departments', [App\Http\Controllers\DepartmentController::class, 'store'])->name('department.add');
 Route::put('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'update'])->name('department.update');
 Route::delete('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'destroy'])->name('department.delete');
 
+Route::get('employees/data', [App\Http\Controllers\EmployeeController::class, 'getEmployees'])->name('employees.data');
 Route::get('employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees');
 Route::get('employee/add', [App\Http\Controllers\EmployeeController::class, 'create'])->name('employee.add');
 Route::post('employee/store', [App\Http\Controllers\EmployeeController::class, 'store'])->name('employee.store');
 Route::delete('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employee.delete');
 Route::get('employee/edit/{id}', [App\Http\Controllers\EmployeeController::class, 'edit'])->name('employee.edit');
 Route::post('employee/update/{id}', [App\Http\Controllers\EmployeeController::class, 'update'])->name('employee.update');
+Route::get('employee/{id}', [App\Http\Controllers\EmployeeController::class, 'show'])->name('employee.show');
 
+Route::get('taxes/data', [App\Http\Controllers\taxController::class, 'getTaxes'])->name('taxes.data');
 Route::get('taxes', [App\Http\Controllers\taxController::class, 'index'])->name('taxes');
 Route::post('taxes', [App\Http\Controllers\taxController::class, 'store'])->name('tax.add');
 Route::put('/taxes/{id}', [App\Http\Controllers\taxController::class, 'update'])->name('tax.update');
 Route::delete('/taxes/{id}', [App\Http\Controllers\taxController::class, 'destroy'])->name('tax.delete');
 Route::post('/taxes/{id}', [App\Http\Controllers\taxController::class, 'setDefaultTax'])->name('setDefault');
-
+// In routes/web.php
+Route::get('/client/{clientId}/invoices', [App\Http\Controllers\clientController::class, 'getClientInvoices'])->name('client.invoices');
+Route::get('/client-payments/{clientId}', [App\Http\Controllers\clientController::class, 'getClientPayments'])->name('client.payments.get');
+Route::get('clients/data', [App\Http\Controllers\clientController::class, 'getClients'])->name('clients.data');
 Route::get('client', [App\Http\Controllers\clientController::class, 'index'])->name('clients');
 Route::post('clients', [App\Http\Controllers\clientController::class, 'store'])->name('client.store');
 Route::get('clients', [App\Http\Controllers\clientController::class, 'create'])->name('client.add');
@@ -78,6 +86,7 @@ Route::get('clients/{clientId}/export-with-payments', function ($clientId) {
   return Excel::download(new ClientsWithPaymentsExport($clientId), 'client_' . $clientId . '_payments.xlsx');
 })->name('clients.export-with-payments');
 
+Route::get('product/data', [App\Http\Controllers\ProductController::class, 'getProducts'])->name('products.data');
 Route::get('product', [App\Http\Controllers\ProductController::class, 'index'])->name('products');
 Route::post('products', [App\Http\Controllers\ProductController::class, 'store'])->name('product.store');
 Route::get('products', [App\Http\Controllers\ProductController::class, 'create'])->name('product.add');
@@ -92,6 +101,7 @@ Route::get('role/edit/{id}', [App\Http\Controllers\RolesAndPermissions::class, '
 Route::post('role/update/{id}', [App\Http\Controllers\RolesAndPermissions::class, 'update'])->name('role.update');
 Route::delete('/role/{id}', [App\Http\Controllers\RolesAndPermissions::class, 'destroy'])->name('role.delete');
 
+Route::get('invoice/data', [App\Http\Controllers\Invoices::class, 'getInvoices'])->name('invoices.data');
 Route::get('invoice/add', [App\Http\Controllers\Invoices::class, 'create'])->name('invoice.add');
 Route::post('invoice/add', [App\Http\Controllers\Invoices::class, 'store'])->name('invoice.store');
 Route::get('invoice', [App\Http\Controllers\Invoices::class, 'index'])->name('invoices');
@@ -109,6 +119,7 @@ Route::get('/states/{id}', [App\Http\Controllers\SettingsController::class, 'fet
 Route::get('/cities/{id}', [App\Http\Controllers\SettingsController::class, 'fetchCities'])->name('fetch.cities');
 Route::get('/clients/{id}', [App\Http\Controllers\Invoices::class, 'fetchClient'])->name('fetch.client');
 
+Route::get('payments/data', [App\Http\Controllers\Payments::class, 'getPayments'])->name('payments.data');
 Route::get('payments', [App\Http\Controllers\Payments::class, 'index'])->name('payments');
 Route::post('payments', [App\Http\Controllers\Payments::class, 'store'])->name('payment.store');
 Route::delete('/payment/{id}', [App\Http\Controllers\Payments::class, 'destroy'])->name('payment.delete');
@@ -118,15 +129,18 @@ Route::get('export-payments', function () {
   return Excel::download(new Payments(), 'payments.xlsx');
 })->name('export-payments');
 
+Route::get('expenses/data', [App\Http\Controllers\ExpenseController::class, 'getExpenses'])->name('expenses.data');
 Route::get('expenses', [App\Http\Controllers\ExpenseController::class, 'index'])->name('expenses');
 Route::get('expense/add', [App\Http\Controllers\ExpenseController::class, 'create'])->name('expense.add');
 Route::post('expenses', [App\Http\Controllers\ExpenseController::class, 'store'])->name('expense.store');
 Route::get('/expense/edit/{id}', [App\Http\Controllers\ExpenseController::class, 'edit'])->name('expense.edit');
 Route::delete('/expense/{id}', [App\Http\Controllers\ExpenseController::class, 'destroy'])->name('expense.delete');
 Route::post('/expense/update/{id}', [App\Http\Controllers\ExpenseController::class, 'update'])->name('expense.update');
+Route::get('expense/{id}', [App\Http\Controllers\ExpenseController::class, 'show'])->name('expense.show');
 
 Route::get('/generate-pdf/{id}', [App\Http\Controllers\Invoices::class, 'generatePDF'])->name('generate');
 
+Route::get('serviceCategories/data', [App\Http\Controllers\serviceCategoryController::class, 'getServiceCategories'])->name('serviceCategories.data');
 Route::get('serviceCategories', [App\Http\Controllers\serviceCategoryController::class, 'index'])->name('serviceCategories');
 Route::post('serviceCategories', [App\Http\Controllers\serviceCategoryController::class, 'store'])->name('serviceCategory.add');
 Route::put('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'update'])->name('serviceCategory.update');

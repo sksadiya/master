@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title'); ?>
 Expenses
 <?php $__env->stopSection(); ?>
@@ -24,89 +26,25 @@ Expenses
                     class="bx bx-plus-circle me-2"></i> Add Expense</a>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="<?php echo e(route('expenses')); ?>" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="<?php echo e(request()->get('search')); ?>" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="<?php echo e(route('expenses')); ?>" type="button" class="btn bg-primary text-light">reset</a>
-
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="expensesTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="expense-title">Title</th>
-                  <th class="sort" data-sort="expense-date">Expense Date</th>
-                  <th class="sort" data-sort="expense-category">Expense Category</th>
-                  <th class="sort" data-sort="expense-amount">Expense Amount</th>
-                  <th class="sort" data-sort="team-member">Team Member</th>
-                  <th class="sort" data-sort="expense-action">Action</th>
+                  <th>Title</th>
+                  <th>Expense Date</th>
+                  <th>Expense Category</th>
+                  <th>Expense Amount</th>
+                  <th>Team Member</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                <?php if($expenses): ?>
-          <?php $__currentLoopData = $expenses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $expense): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <tr>
-        <td class="expense-title"><?php echo e($expense->title); ?></td>
-        <td class="expense-date"><?php echo e(\Carbon\Carbon::parse($expense->date)->format('d/m/Y')); ?></td>
-        <td class="expense-category"><?php echo e($expense->category->name); ?></td>
-        <td class="expense-amount"><?php echo e($expense->amount); ?></td>
-        <td class="team-member"><?php echo e($expense->member->name); ?></td>
-
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="<?php echo e(route('expense.edit', $expense->id)); ?>"
-          class="btn btn-sm btn-success edit-item-btn"><i class="bx bxs-pencil"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#confirmationModal" data-id="<?php echo e($expense->id); ?>"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        <?php else: ?>
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    <?php endif; ?>
+               
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                <?php echo e($expenses->links()); ?>
-
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item expense-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item expense-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item expense-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item expense-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -144,8 +82,6 @@ Expenses
 
 <?php $__env->startSection('script'); ?>
 <script src="<?php echo e(URL::asset('build/libs/prismjs/prism.js')); ?>"></script>
-<script src="<?php echo e(URL::asset('build/libs/list.js/list.min.js')); ?>"></script>
-<script src="<?php echo e(URL::asset('build/libs/list.pagination.js/list.pagination.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/select2/js/select2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/libs/sweetalert2/sweetalert2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
@@ -179,18 +115,33 @@ Expenses
   <?php endif; ?>
 
   $(document).ready(function () {
-    $('.dropdown-item.expense-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '<?php echo e($expenses->url($expenses->currentPage())); ?>' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-    var expensesList = new List('expensesList', {
-      valueNames: ['expense-title', 'expense-date', 'expense-category', 'expense-amount',
-        'team-member'],
-    });
+    $('#expensesTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '<?php echo e(route('expenses.data')); ?>',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'title', name: 'title' },
+        { data: 'date', name: 'date' },
+        { data: 'category', name: 'category' },
+        { data: 'amount', name: 'amount' },
+        { data: 'member', name: 'member' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
 
-    $('.remove-item-btn').on('click', function () {
+    $('#expensesTable').on('click','.remove-item-btn' ,function () {
       var expenseId = $(this).data('id');
       $('#delete-record').data('id', expenseId);
     });

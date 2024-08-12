@@ -14,18 +14,76 @@ class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        $expenses = Expense::latest();
-        if (!empty($request->get('search'))) {
-            $expenses = $expenses->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
-            });
-        }
-        $perPage = $request->get('perPage', 20);
-        $expenses = $expenses->paginate($perPage);
-        return view('expenses.index', compact('expenses'));
+        return view('expenses.index');
     }
+    public function getExpenses(Request $request)
+    {
+        $query = Expense::with(['category', 'member'])->latest();
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('title', 'like', "%{$searchValue}%")
+                    ->orWhere('amount', 'like',"%{$searchValue}%")
+                    ->orWhere('date', 'like',"%{$searchValue}%")
+                    ->orWhereHas('category', function($q) use ($searchValue) {
+                        $q->where('name', 'like', "%{$searchValue}%");
+                    })
+                    ->orWhereHas('member', function($q) use ($searchValue) {
+                        $q->where('name', 'like', "%{$searchValue}%");
+                    });
+        }
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'title' => 'title',
+                'amount' => 'amount',
+                'date' => 'date',
+                'category' => 'expense_category_id',
+                'member' => 'team_member_id',
+            ];
 
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $expenses = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $expenses->map(function ($expense) {
+                return [
+                    'title' => '<a href="'. route('expense.show',$expense->id).'">'.$expense->title.'</a>',
+                    'date' =>  \Carbon\Carbon::parse($expense->date)->format('d/m/Y') ,
+                    'category' => $expense->category->name,
+                    'amount' => $expense->amount,
+                    'member' => $expense->member->name,
+                    'action' =>'<div class="justify-content-end d-flex gap-2">
+          <div class="edit">
+          <a href="'. route('expense.edit', $expense->id).'"
+          class="btn btn-sm btn-success edit-item-btn"><i class="bx bxs-pencil"></i> Edit</a>
+          </div>
+          <div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#confirmationModal" data-id="'. $expense->id .'"><i class="bx bx-trash"></i>
+          Delete</button>
+          </div>
+        </div>',
+                ];
+            })
+        ]);
+    }
     public function create()
     {
         $categories = expense_category::all();
@@ -167,5 +225,15 @@ class ExpenseController extends Controller
             Session::flash('error', 'Failed to delete expense!');
         }
         return redirect()->route('expenses');
+    }
+
+    public function show($id, Request $request)
+    {
+        $expense = Expense::find($id);
+        if (empty($expense)) {
+            Session::flash('error', 'No Client Found!');
+            return redirect()->back();
+        }
+        return view('expenses.show', compact('expense'));
     }
 }

@@ -9,14 +9,58 @@ use Illuminate\Support\Facades\Session;
 class categoryController extends Controller
 {
     public function index(Request $request) {
-        $categories = Category::withCount('products')->latest();
+        return view('category.index');
+    }
 
-        if (!empty($request->get('search'))) {
-            $categories = $categories->where('name', 'like', '%' . $request->get('search') . '%');
+    public function getData(Request $request)
+    {
+        $query = Category::withCount('products')->latest();
+    
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('name', 'like', "%{$searchValue}%");
         }
-        $perPage = $request->get('perPage', 20); 
-        $categories = $categories->paginate($perPage);
-        return view('category.index', compact('categories'));
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            $query->orderBy($columnName, $direction);
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $categories = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $categories->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'products_count' => $category->products_count,
+                    'created_at' => $category->created_at->toDateString(),
+                    'updated_at' => $category->updated_at->toDateString(),
+                    'action' => '<div class="justify-content-end d-flex gap-2">
+                    <div class="edit">
+                        <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#editCategoryModal" data-id="' . $category->id . '"
+                        data-name="' . $category->name . '"><i class="bx bxs-pencil"></i> Edit</button>
+                    </div>
+                    <div class="remove">
+                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#deleteRecordModal" data-id="' . $category->id . '"><i class="bx bx-trash"></i> Delete</button>
+                    </div>
+                </div>'
+                ];
+            })
+        ]);
     }
 
     public function store(Request $request)

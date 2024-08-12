@@ -24,87 +24,24 @@ Employees
                 <a href="{{ route('employee.add') }}" type="button" class="btn btn-primary add-btn"><i class="bx bx-plus-circle me-2"></i> Add employee</a>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="{{ route('employees') }}" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="{{ request()->get('search') }}" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="{{ route('employees') }}" type="button" class="btn bg-primary text-light">reset</a>
-
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="employeeTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="employee-name">Name</th>
-                  <th class="sort" data-sort="employee-department">Department</th>
-                  <th class="sort" data-sort="employee-email">Email</th>
-                  <th class="sort" data-sort="employee-contact">Contact</th>
-                  <!-- <th class="sort" data-sort="employee-salary">Salary</th> -->
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Email</th>
+                  <th>Contact</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                @if($employees)
-          @foreach ($employees as $employee)
-        <tr>
-        <td class="employee-name"><a href="">{{ $employee->user->name }}</a></td>
-        <td class="employee-department">{{ $employee->department->name }}</td>
-        <td class="employee-email">{{ $employee->user->email }}</td>
-        <td class="employee-contact">{{ $employee->user->contact}}</td>
-        <!-- <td class="employee-salary">{{ $employee->salary}}</td> -->
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="{{ route('employee.edit' ,$employee->id)}}" class="btn btn-sm btn-success edit-item-btn"><i
-          class="bx bxs-pencil"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#confirmationModal" data-id="{{ $employee->id }}"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      @endforeach
-        @else
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    @endif
+               
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                {{ $employees->links() }}
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item employee-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item employee-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item employee-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item employee-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -174,19 +111,32 @@ Employees
   @endif
 
   $(document).ready(function () {
-    $('.dropdown-item.employee-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '{{ $employees->url($employees->currentPage()) }}' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
+    $('#employeeTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('employees.data') }}',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'name', name: 'name' },
+        { data: 'department', name: 'department' },
+        { data: 'email', name: 'email' },
+        { data: 'contact', name: 'contact' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
 
-    var employeesList = new List('employeesList', {
-      valueNames: ['employee-name', 'employee-department', 'employee-contact', 'employee-email',
-        'employee-salary','action'],
-    });
-
-    $('.remove-item-btn').on('click', function () {
+    $('#employeeTable').on('click', '.remove-item-btn' ,function () {
       var employeeId = $(this).data('id');
       $('#delete-record').data('id', employeeId);
     });

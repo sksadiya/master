@@ -127,7 +127,7 @@ File: Main Js File
 					duration: toastData.duration,
 					close: toastData.close == "close" ? true : false,
 					style: toastData.style == "style" ? {
-						background: "linear-gradient(to right, var(--vz-success), var(--vz-primary))"
+						background: "linear-gradient(to right, #0AB39C, #405189)"
 					} : "",
 				}).showToast();
 			});
@@ -770,7 +770,7 @@ File: Main Js File
 				document.body.classList.remove("vertical-sidebar-enable");
 				document.documentElement.getAttribute("data-sidebar-size") == "sm" ?
 					document.documentElement.setAttribute("data-sidebar-size", "") :
-					document.documentElement.setAttribute("data-sidebar-size", "sm");
+					document.documentElement.setAttribute("data-sidebar-size", "sm");				
 			} else if (windowSize > 1025) {
 				document.body.classList.remove("vertical-sidebar-enable");
 				document.documentElement.getAttribute("data-sidebar-size") == "lg" ?
@@ -786,7 +786,7 @@ File: Main Js File
 		if (document.documentElement.getAttribute("data-layout") === "semibox") {
 			if (windowSize > 767) {
 				// (document.querySelector(".hamburger-icon").classList.contains("open")) ? document.documentElement.setAttribute('data-sidebar-visibility', "show"): '';
-				if (document.documentElement.getAttribute('data-sidebar-visibility') == "show") {
+				if(document.documentElement.getAttribute('data-sidebar-visibility') == "show") {
 					document.documentElement.getAttribute("data-sidebar-size") == "lg" ?
 						document.documentElement.setAttribute("data-sidebar-size", "sm") :
 						document.documentElement.setAttribute("data-sidebar-size", "lg");
@@ -1014,7 +1014,73 @@ File: Main Js File
 			updateCartPrice();
 		}
 
-		
+		// notification messages
+		if (document.getElementsByClassName("notification-check")) {
+			function emptyNotification() {
+				Array.from(document.querySelectorAll("#notificationItemsTabContent .tab-pane")).forEach(function (elem) {
+					if (elem.querySelectorAll(".notification-item").length > 0) {
+						if (elem.querySelector(".view-all")) {
+							elem.querySelector(".view-all").style.display = "block";
+						}
+					} else {
+						if (elem.querySelector(".view-all")) {
+							elem.querySelector(".view-all").style.display = "none";
+						}
+						var emptyNotificationElem = elem.querySelector(".empty-notification-elem")
+						if (!emptyNotificationElem) {
+							elem.innerHTML += '<div class="empty-notification-elem">\
+							<div class="w-25 w-sm-50 pt-3 mx-auto">\
+								<img src="build/images/svg/bell.svg" class="img-fluid" alt="user-pic">\
+							</div>\
+							<div class="text-center pb-5 mt-2">\
+								<h6 class="fs-18 fw-semibold lh-base">Hey! You have no any notifications </h6>\
+							</div>\
+						</div>'
+						}
+					}
+				});
+			}
+			emptyNotification();
+
+
+			Array.from(document.querySelectorAll(".notification-check input")).forEach(function (element) {
+				element.addEventListener("change", function (el) {
+					el.target.closest(".notification-item").classList.toggle("active");
+
+					var checkedCount = document.querySelectorAll('.notification-check input:checked').length;
+
+					if (el.target.closest(".notification-item").classList.contains("active")) {
+						(checkedCount > 0) ? document.getElementById("notification-actions").style.display = 'block' : document.getElementById("notification-actions").style.display = 'none';
+					} else {
+						(checkedCount > 0) ? document.getElementById("notification-actions").style.display = 'block' : document.getElementById("notification-actions").style.display = 'none';
+					}
+					document.getElementById("select-content").innerHTML = checkedCount
+				});
+
+				var notificationDropdown = document.getElementById('notificationDropdown')
+				notificationDropdown.addEventListener('hide.bs.dropdown', function (event) {
+					element.checked = false;
+					document.querySelectorAll('.notification-item').forEach(function (item) {
+						item.classList.remove("active");
+					})
+					document.getElementById('notification-actions').style.display = '';
+				});
+			});
+
+			var removeItem = document.getElementById('removeNotificationModal');
+			removeItem.addEventListener('show.bs.modal', function (event) {
+				document.getElementById("delete-notification").addEventListener("click", function () {
+					Array.from(document.querySelectorAll(".notification-item")).forEach(function (element) {
+						if (element.classList.contains("active")) {
+							element.remove();
+						}
+					});
+					emptyNotification();
+
+					document.getElementById("NotificationModalbtn-close").click();
+				})
+			})
+		}
 	}
 
 	function initComponents() {
@@ -1123,7 +1189,7 @@ File: Main Js File
 				document.getElementById("layout-width").style.display = "block";
 				document.getElementById("sidebar-visibility").style.display = "none";
 			}
-			initLeftMenuCollapse();
+			// initLeftMenuCollapse();
 			initActiveMenu();
 			addEventListenerOnSmHoverMenu();
 			initMenuItemScroll();
@@ -1171,7 +1237,7 @@ File: Main Js File
 				document.getElementById("layout-width").style.display = "none";
 				document.getElementById("sidebar-visibility").style.display = "block";
 			}
-			initLeftMenuCollapse();
+			// initLeftMenuCollapse();
 			initActiveMenu();
 			addEventListenerOnSmHoverMenu();
 			initMenuItemScroll();
@@ -1194,75 +1260,6 @@ File: Main Js File
 	function layoutSwitch(isLayoutAttributes) {
 		switch (isLayoutAttributes) {
 			case isLayoutAttributes:
-				switch (isLayoutAttributes["data-theme"]) {
-					case "default":
-						getElementUsingTagname("data-theme", "default");
-						sessionStorage.setItem("data-theme", "default");
-						document.documentElement.setAttribute("data-theme", "default");
-						break;
-					case "minimal":
-						getElementUsingTagname("data-theme", "minimal");
-						sessionStorage.setItem("data-theme", "minimal");
-						document.documentElement.setAttribute("data-theme", "minimal");
-						break;
-					case "saas":
-						getElementUsingTagname("data-theme", "saas");
-						sessionStorage.setItem("data-theme", "saas");
-						document.documentElement.setAttribute("data-theme", "saas");
-						break;
-					case "corporate":
-						getElementUsingTagname("data-theme", "corporate");
-						sessionStorage.setItem("data-theme", "corporate");
-						document.documentElement.setAttribute("data-theme", "corporate");
-						break;
-					case "galaxy":
-						getElementUsingTagname("data-theme", "galaxy");
-						sessionStorage.setItem("data-theme", "galaxy");
-						document.documentElement.setAttribute("data-theme", "galaxy");
-						document.getElementById("body-img").style.display = "block";
-						break;
-					case "material":
-						getElementUsingTagname("data-theme", "material");
-						sessionStorage.setItem("data-theme", "material");
-						document.documentElement.setAttribute("data-theme", "material");
-						break;
-					case "creative":
-						getElementUsingTagname("data-theme", "creative");
-						sessionStorage.setItem("data-theme", "creative");
-						document.documentElement.setAttribute("data-theme", "creative");
-						break;
-					case "minimal":
-						getElementUsingTagname("data-theme", "minimal");
-						sessionStorage.setItem("data-theme", "minimal");
-						document.documentElement.setAttribute("data-theme", "minimal");
-						break;
-					case "modern":
-						getElementUsingTagname("data-theme", "modern");
-						sessionStorage.setItem("data-theme", "modern");
-						document.documentElement.setAttribute("data-theme", "modern");
-						break;
-					case "interactive":
-						getElementUsingTagname("data-theme", "interactive");
-						sessionStorage.setItem("data-theme", "interactive");
-						document.documentElement.setAttribute("data-theme", "interactive");
-						break;
-					case "classic":
-						getElementUsingTagname("data-theme", "classic");
-						sessionStorage.setItem("data-theme", "classic");
-						document.documentElement.setAttribute("data-theme", "classic");
-						break;
-					case "vintage":
-						getElementUsingTagname("data-theme", "vintage");
-						sessionStorage.setItem("data-theme", "vintage");
-						document.documentElement.setAttribute("data-theme", "vintage");
-						break;
-					default:
-						getElementUsingTagname("data-theme", "default");
-						sessionStorage.setItem("data-theme", "default");
-						document.documentElement.setAttribute("data-theme", "default");
-						break;
-				}
-
 				switch (isLayoutAttributes["data-layout"]) {
 					case "vertical":
 						getElementUsingTagname("data-layout", "vertical");
@@ -1646,38 +1643,10 @@ File: Main Js File
 						break;
 				}
 
-				switch (isLayoutAttributes["data-theme-colors"]) {
-					case "default":
-						getElementUsingTagname("data-theme-colors", "default");
-						sessionStorage.setItem("data-theme-colors", "default");
-						document.documentElement.setAttribute("data-theme-colors", "default");
-						break;
-					case "green":
-						getElementUsingTagname("data-theme-colors", "green");
-						sessionStorage.setItem("data-theme-colors", "green");
-						document.documentElement.setAttribute("data-theme-colors", "green");
-						break;
-					case "purple":
-						getElementUsingTagname("data-theme-colors", "purple");
-						sessionStorage.setItem("data-theme-colors", "purple");
-						document.documentElement.setAttribute("data-theme-colors", "purple");
-						break;
-					case "blue":
-						getElementUsingTagname("data-theme-colors", "blue");
-						sessionStorage.setItem("data-theme-colors", "blue");
-						document.documentElement.setAttribute("data-theme-colors", "blue");
-						break;
-					default:
-						getElementUsingTagname("data-theme-colors", "default");
-						sessionStorage.setItem("data-theme-colors", "default");
-						document.documentElement.setAttribute("data-theme-colors", "default");
-						break;
-				}
-
 				switch (isLayoutAttributes["data-body-image"]) {
 					case "img-1":
 						getElementUsingTagname("data-body-image", "img-1");
-						sessionStorage.setItem("data-body-image", "img-1");
+						sessionStorage.setItem("data-sidebabodyr-image", "img-1");
 						document.documentElement.setAttribute("data-body-image", "img-1");
 						if (document.getElementById("theme-settings-offcanvas")) {
 							document.documentElement.removeAttribute("data-sidebar-image");
@@ -1698,6 +1667,7 @@ File: Main Js File
 						sessionStorage.setItem("data-body-image", "none");
 						document.documentElement.setAttribute("data-body-image", "none");
 						break;
+
 					default:
 						if (sessionStorage.getItem("data-body-image") && sessionStorage.getItem("data-body-image") == "img-1") {
 							sessionStorage.setItem("data-body-image", "img-1");
@@ -1705,7 +1675,7 @@ File: Main Js File
 							document.documentElement.setAttribute("data-body-image", "img-1");
 
 							if (document.getElementById("theme-settings-offcanvas")) {
-								if (document.getElementById("sidebar-img")) {
+								if (document.getElementById("sidebar-img")) { 
 									document.getElementById("sidebar-img").style.display = "none";
 									document.documentElement.removeAttribute("data-sidebar-image");
 								}
@@ -1718,7 +1688,7 @@ File: Main Js File
 							sessionStorage.setItem("data-body-image", "img-3");
 							getElementUsingTagname("data-body-image", "img-3");
 							document.documentElement.setAttribute("data-body-image", "img-3");
-						} else {
+						} else if (sessionStorage.getItem("data-body-image") == "none") {
 							sessionStorage.setItem("data-body-image", "none");
 							getElementUsingTagname("data-body-image", "none");
 							document.documentElement.setAttribute("data-body-image", "none");
@@ -1803,7 +1773,7 @@ File: Main Js File
 
 				var sidebarSections = "block";
 				if (document.documentElement.getAttribute("data-layout") == "semibox") {
-					if (document.documentElement.getAttribute("data-sidebar-visibility") == "hidden") {
+					if(document.documentElement.getAttribute("data-sidebar-visibility") == "hidden"){
 						document.documentElement.removeAttribute("data-sidebar");
 						document.documentElement.removeAttribute("data-sidebar-image");
 						document.documentElement.removeAttribute("data-sidebar-size");
@@ -1835,26 +1805,9 @@ File: Main Js File
 					document.getElementById("customizerclose-btn").click();
 				}
 
-				if (ele == 'data-bs-theme' || ele == 'data-theme' || ele == 'data-theme-colors') {
+				if(ele == 'data-bs-theme') {
 					// Dispatch the resize event on the window object
 					window.dispatchEvent(resizeEvent);
-				}
-				if (ele == 'data-theme') {
-					// Dispatch the resize event on the window object
-					document.documentElement.setAttribute("data-theme", x.value);
-					document.getElementById("body-img").style.display = (x.value === "galaxy") ? "block" : "none";
-					if (x.value === "galaxy"){
-						document.documentElement.setAttribute("data-sidebar", "dark");
-						document.documentElement.setAttribute("data-bs-theme", "dark");
-					} else {
-						document.documentElement.setAttribute("data-sidebar", sessionStorage.getItem("data-sidebar"))
-						document.documentElement.setAttribute("data-bs-theme", sessionStorage.getItem("data-bs-theme"))
-					}
-				}
-				if (ele == 'data-theme-colors' || ele == 'data-theme') {
-					setTimeout(() => {
-						window.dispatchEvent(resizeEvent);
-					}, 200);
 				}
 			});
 		});
@@ -1879,7 +1832,7 @@ File: Main Js File
 
 		if (document.querySelectorAll("[data-bs-target='#collapseBgGradient.show']")) {
 			Array.from(document.querySelectorAll("[data-bs-target='#collapseBgGradient.show']")).forEach(function (subElem) {
-				subElem.addEventListener("click", function () {
+				subElem.addEventListener("click", function(){
 					var myCollapse = document.getElementById('collapseBgGradient')
 					var bsCollapse = new bootstrap.Collapse(myCollapse, {
 						toggle: false,
@@ -1939,17 +1892,8 @@ File: Main Js File
 			isLayoutAttributes["data-topbar"] = sessionStorage.getItem("data-topbar");
 			isLayoutAttributes["data-preloader"] = sessionStorage.getItem("data-preloader");
 			isLayoutAttributes["data-body-image"] = sessionStorage.getItem("data-body-image");
-			isLayoutAttributes["data-theme"] = sessionStorage.getItem("data-theme");
-			isLayoutAttributes["data-theme-colors"] = sessionStorage.getItem("data-theme-colors");
 			layoutSwitch(isLayoutAttributes);
 		}
-
-		// sidebarUserProfile
-		document.getElementById("sidebarUserProfile")?.addEventListener("click", function (event) {
-			(event.target.checked) ?
-				document.documentElement.setAttribute("data-sidebar-user-show", ""):
-				document.documentElement.removeAttribute("data-sidebar-user-show");
-		});
 	}
 
 	function initFullScreen() {
@@ -2011,8 +1955,8 @@ File: Main Js File
 				html.hasAttribute("data-bs-theme") && html.getAttribute("data-bs-theme") == "dark" ?
 					setLayoutMode("data-bs-theme", "light", "layout-mode-light", html) :
 					setLayoutMode("data-bs-theme", "dark", "layout-mode-dark", html);
-				// Dispatch the resize event on the window object
-				window.dispatchEvent(resizeEvent);
+					// Dispatch the resize event on the window object
+					window.dispatchEvent(resizeEvent);
 			});
 		}
 	}
@@ -2035,7 +1979,7 @@ File: Main Js File
 		initModeSetting();
 		windowLoadContent();
 		counter();
-		initLeftMenuCollapse();
+		// initLeftMenuCollapse();
 		initTopbarComponents();
 		initComponents();
 		resetLayout();

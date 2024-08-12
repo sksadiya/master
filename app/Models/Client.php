@@ -30,7 +30,7 @@ class Client extends Model
 
     public function services()
     {
-        return $this->belongsToMany(ServiceCategory::class, 'client_service', 'client_id', 'service_category_id');
+        return $this->belongsToMany(serviceCategory::class, 'client_service', 'client_id', 'service_category_id');
     }
    
 }

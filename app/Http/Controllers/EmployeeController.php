@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Country;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -16,16 +18,82 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        $employees = Employee::latest();
-        if (!empty($request->get('search'))) {
-            $employees = $employees->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+        // $employees = Employee::latest();
+        // if (!empty($request->get('search'))) {
+        //     $employees = $employees->where(function ($query) use ($request) {
+        //         $query->where('name', 'like', '%' . $request->get('search') . '%')
+        //             ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+        //     });
+        // }
+        // $perPage = $request->get('perPage', 20);
+        // $employees = $employees->paginate($perPage);
+        return view('employee.index');
+    }
+
+    public function getEmployees(Request $request)
+    {
+        $query = Employee::with(['user','department'])->latest();
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->WhereHas('user', function($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%")
+                ->orWhere('email', 'like', "%{$searchValue}%")
+                ->orWhere('contact', 'like', "%{$searchValue}%");
+            })
+            ->orWhereHas('department', function($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%");
             });
         }
-        $perPage = $request->get('perPage', 20);
-        $employees = $employees->paginate($perPage);
-        return view('employee.index', compact('employees'));
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'name' => 'user_id',
+                'department' => 'dept_id',
+                'email' => 'user_id',
+                'contact' => 'user_id',
+            ];
+
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $employees = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $employees->map(function ($employee) {
+                return [
+                    'name' => '<a href="'. route('employee.show',$employee->id).'">'.$employee->user->name.'</a>',
+                    'department' => $employee->department->name,
+                    'email' => $employee->user->email,
+                    'contact' => $employee->user->contact,
+                    'action' =>'<div class="justify-content-end d-flex gap-2">
+                        <div class="edit">
+                        <a href="'. route('employee.edit' ,$employee->id).'" class="btn btn-sm btn-success edit-item-btn"><i
+                        class="bx bxs-pencil"></i> Edit</a>
+                        </div>
+                        <div class="remove">
+                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#confirmationModal" data-id="'. $employee->id .'"><i class="bx bx-trash"></i>
+                        Delete</button>
+                        </div>
+                        </div>',
+                ];
+            })
+        ]);
     }
 
     public function create() {
@@ -291,5 +359,20 @@ class EmployeeController extends Controller
             'status' => true,
             'message' => 'employee Deleted Successfully'
         ]);
+    }
+
+    public function show($id, Request $request)
+    {
+        $employee = Employee::with('user','expenses')->find($id);
+        if (empty($employee)) {
+            Session::flash('error', 'No Employee Found!');
+            return redirect()->back();
+        }
+        $expenses = $employee->expenses;
+        $country = Country::find($employee->country_id);
+        $state = State::find($employee->state_id);
+        $city = City::find($employee->city_id);
+   
+        return view('employee.show', compact('employee','country','state','city','expenses'));
     }
 }

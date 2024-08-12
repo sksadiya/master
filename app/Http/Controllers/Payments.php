@@ -11,20 +11,90 @@ use Spatie\LaravelPdf\Facades\Pdf;
 class Payments extends Controller
 {
     public function index(Request $request) {
-    $payments = Payment::with('invoice');
+    // $payments = Payment::with('invoice');
         $invoices = Invoice::all();
-        if (!empty($request->get('search'))) {
-            $payments = $payments->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
-            });
-        }
+        // if (!empty($request->get('search'))) {
+        //     $payments = $payments->where(function ($query) use ($request) {
+        //         $query->where('name', 'like', '%' . $request->get('search') . '%')
+        //             ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+        //     });
+        // }
 
-        $perPage = $request->get('perPage', 20);
-        $payments = $payments->paginate($perPage);
+        // $perPage = $request->get('perPage', 20);
+        // $payments = $payments->paginate($perPage);
 
-        return view('payments.index', compact('payments','invoices'));
+        return view('payments.index', compact('invoices'));
     }
+    public function getPayments(Request $request)
+    {
+        $query = Payment::with('invoice');
+    
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('payment_date', 'like', "%{$searchValue}%")
+                  ->orWhere('payment_mode', 'like', "%{$searchValue}%")
+                  ->orWhere('due_payment', 'like', "%{$searchValue}%")
+                  ->orWhere('amount', 'like', "%{$searchValue}%")
+                  ->orWhereHas('invoice', function ($q) use ($searchValue) {
+                      $q->where('invoice_number', 'like', "%{$searchValue}%");
+                  });
+        }
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            
+            $columnMap = [
+                'invoice' => 'invoice_id',
+                'payment_date' => 'payment_date',
+                'payment_mode' => 'payment_mode',
+                'amount' => 'amount',
+                'due_payment' => 'due_payment',
+            ];
+    
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+    
+        // Pagination
+        $perPage = $request->get('length', 10);
+        $page = $request->get('start', 0) / $perPage;
+        $totalRecords = $query->count();
+    
+        $payments = $query->skip($page * $perPage)->take($perPage)->get();
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $payments->map(function ($payment) {
+                return [
+                    'invoice' => '<a href="'.route('invoice.show',$payment->invoice->id).'">'.$payment->invoice->invoice_number.'</a>',
+                    'payment_date' => $payment->payment_date,
+                    'payment_mode' => $payment->payment_mode,
+                    'amount' => $payment->amount,
+                    'due_payment' => $payment->due_payment,
+                    'action' => '<div class="justify-content-end d-flex gap-2">
+                    <div class="edit">
+                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#editPaymentModal" data-id="'. $payment->id .'" data-invoice="'. $payment->invoice_id .'"
+                    data-payment-method="'. $payment->payment_mode .'" data-payment-note="'. $payment->notes .'" data-payment-date="'. $payment->payment_date.'" data-payment-amount="'. $payment->amount.'"><i class="bx bxs-pencil"></i> Edit</button>
+                    </div>
+                    <div class="remove">
+                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#confirmationModal" data-id="'. $payment->id .'"><i class="bx bx-trash"></i>
+                    Delete</button>
+                    </div>
+                    </div>'
+                ];
+            })
+        ]);
+    }
+    
     public function store(Request $request)
 {
     // Validate the request data

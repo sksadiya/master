@@ -24,7 +24,7 @@
                                     class="profile-img-file-input">
                                 <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
                                     <span class="avatar-title rounded-circle bg-light text-body material-shadow">
-                                        <i class="ri-camera-fill"></i>
+                                    <i class="fas fa-camera"></i>
                                     </span>
                                 </label>
                             </div>

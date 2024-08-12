@@ -19,14 +19,88 @@ class Invoices extends Controller
 {
     public function index(Request $request)
     {
-        $invoices = Invoice::with('client');
-        if (!empty($request->get('search'))) {
-            $invoices = $invoices->where('name', 'like', '%' . $request->get('search') . '%');
-            $invoices = $invoices->where('value', 'like', '%' . $request->get('search') . '%');
+        $invoices = Invoice::all();
+        return view('invoices.index',compact('invoices'));
+    }
+
+    public function getInvoices(Request $request)
+    {
+        $query = Invoice::with('client')->latest();
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('invoice_number', 'like', "%{$searchValue}%")
+                ->orWhere('total', 'like', "%{$searchValue}%")
+                ->orWhere('due_amount', 'like', "%{$searchValue}%")
+                ->orWhere('invoice_status', 'like', "%{$searchValue}%")
+                ->orWhereHas('client', function ($q) use ($searchValue) {
+                    $q->where('first_name', 'like', "%{$searchValue}%");
+                });
         }
-        $perPage = $request->get('perPage', 20);
-        $invoices = $invoices->paginate($perPage);
-        return view('invoices.index', compact('invoices'));
+
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'invoice' => 'invoice_number',
+                'client' => 'client_id',
+                'total' => 'total',
+                'due' => 'due_amount',
+                'status' => 'invoice_status',
+            ];
+
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+
+        $invoices = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $invoices->map(function ($invoice) {
+                return [
+                    'invoice' => '<a href="' . route('invoice.show', $invoice->id) . '">' . $invoice->invoice_number . '</a>',
+                    'client' => '<a href="' . route('client.show', $invoice->client->id) . '">' . $invoice->client->first_name. ' '.  $invoice->client->last_name . '</a>',
+                    'total' => $invoice->total,
+                    'due' => $invoice->due_amount,
+                    'status' =>   $this->getStatusBadge($invoice->invoice_status),
+                    'action' => ' <div class="justify-content-end d-flex gap-2">
+                    <div class="edit">
+                    <a href="' . route('invoice.edit', $invoice->id) . '"
+                    class="btn btn-sm btn-success edit-item-btn"><i class="bx bxs-pencil"></i> Edit</a>
+                    </div>
+                    <div class="remove">
+                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#invoiceDeleteModal" data-id="' . $invoice->id . '"><i class="bx bx-trash"></i>
+                    Delete</button>
+                    </div>
+                    </div>',
+                ];
+            })
+        ]);
+    }
+    public function getStatusBadge($status)
+    {
+        $badgeClasses = [
+            'Unpaid' => 'bg-danger-subtle text-danger',
+            'Paid' => 'bg-success-subtle text-success',
+            'Partially_Paid' => 'bg-secondary-subtle text-secondary',
+            'Overdue' => 'bg-primary-subtle text-primary',
+            'Processing' => 'bg-info-subtle text-info',
+        ];
+
+        $badgeClass = $badgeClasses[$status] ?? 'bg-warning-subtle text-warning';
+        return '<span class="badge ' . $badgeClass . ' badge-border">' . $status . '</span>';
     }
     public function create()
     {
@@ -345,7 +419,8 @@ class Invoices extends Controller
 
         return view('invoices.show', compact('invoice'));
     }
-    public function generatePDF($id) {
+    public function generatePDF($id)
+    {
         $invoice = Invoice::with('items', 'client', 'client.city', 'client.state')->find($id);
         if (empty($invoice)) {
             return redirect()->back()->with('error', 'No Invoice Found!');
@@ -357,29 +432,13 @@ class Invoices extends Controller
 
         return $pdf;
     }
-public function exportInvoices() {
-    $invoices = Invoice::latest()->get();
-    $pdf = Pdf::view('invoices.exportInvoices', ['invoices' => $invoices])
+    public function exportInvoices()
+    {
+        $invoices = Invoice::latest()->get();
+        $pdf = Pdf::view('invoices.exportInvoices', ['invoices' => $invoices])
             ->format('A4')
             ->download('invoices.pdf');
 
         return $pdf;
-}
-//     public function generatePDF($id)
-// {
-//     set_time_limit(300);
-//     $invoice = Invoice::with('items', 'client')->find($id); 
-//     $pdf = Pdf::loadView('invoices.invoice', [
-//         'invoice' => $invoice,
-//     ])
-//     ->setPaper('A4', 'portrait')
-//     ->setOptions([
-//         'isHtml5ParserEnabled' => true,
-//         'isPhpEnabled' => true,
-//         'isRemoteEnabled' => true, 
-//     ]);
-
-//     return $pdf->download('invoice.pdf');
-// }
-
+    }
 }

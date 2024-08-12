@@ -9,17 +9,75 @@ use Illuminate\Support\Facades\Validator;
 class DepartmentController extends Controller
 {
     public function index(Request $request) {
-        $departments = Department::withCount('employees')->latest();
+        // $departments = Department::withCount('employees')->latest();
 
-        if (!empty($request->get('search'))) {
-            $departments = $departments->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
-            });
+        // if (!empty($request->get('search'))) {
+        //     $departments = $departments->where(function ($query) use ($request) {
+        //         $query->where('name', 'like', '%' . $request->get('search') . '%')
+        //             ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+        //     });
+        // }
+        // $perPage = $request->get('perPage', 20); 
+        // $departments = $departments->paginate($perPage);
+        return view('departments.index');
+    }
+    
+    public function getDepartments(Request $request)
+    {
+        $query = Department::withCount('employees')->latest();
+    
+        // Filtering
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('description', 'like',"%{$searchValue}%");
         }
-        $perPage = $request->get('perPage', 20); 
-        $departments = $departments->paginate($perPage);
-        return view('departments.index', compact('departments'));
+    
+        // Sorting
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
+
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'name' => 'name',
+                'description' => 'description',
+            ];
+
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+        // Pagination
+        $perPage = $request->get('length', 10); // Number of records per page
+        $page = $request->get('start', 0) / $perPage; // Offset
+        $totalRecords = $query->count(); // Total records count
+    
+        $departments = $query->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+            'data' => $departments->map(function ($dept) {
+                return [
+                    'name' => $dept->name,
+                    'employees_count' => $dept->employees_count,
+                    'action' => ' <div class="justify-content-end d-flex gap-2">
+          <div class="edit">
+          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+          data-bs-target="#editDepartmentModel" data-id="'. $dept->id .'"
+          data-name="'. $dept->name .'" data-description="'. $dept->description .'"><i class="bx bxs-pencil"></i> Edit</button>
+          </div>
+          <div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#deleteRecordModal" data-id="'. $dept->id .'"><i class="bx bx-trash"></i> Delete</button>
+          </div>
+        </div>'
+                ];
+            })
+        ]);
     }
     public function store(Request $request)
     {

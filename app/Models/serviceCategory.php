@@ -10,8 +10,10 @@ class serviceCategory extends Model
     use HasFactory;
     protected $table = 'service_categories';
     protected $fillable = ['name'];
-    // public function services()
-    // {
-    //     return $this->hasMany(Product::class);
-    // }
+
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'client_service', 'service_category_id', 'client_id');
+    }
+    
 }

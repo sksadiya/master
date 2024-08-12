@@ -245,7 +245,7 @@ unset($__errorArgs, $__bag); ?>" cols="5" rows="5" id="Address"
                       <input id="app-logo-input" type="file" name="app-logo" class="app-logo-input">
                       <label for="app-logo-input" class="profile-photo-edit avatar-xs">
                         <span class="avatar-title rounded-circle bg-light text-body material-shadow">
-                          <i class="ri-camera-fill"></i>
+                          <i class="fas fa-camera"></i>
                         </span>
                       </label>
                     </div>
@@ -265,7 +265,7 @@ unset($__errorArgs, $__bag); ?>" cols="5" rows="5" id="Address"
                       <input id="app-fevicon-input" type="file" name="app-fevicon" class="app-fevicon-input">
                       <label for="app-fevicon-input" class="profile-photo-edit avatar-xs">
                         <span class="avatar-title rounded-circle bg-light text-body material-shadow">
-                          <i class="ri-camera-fill"></i>
+                          <i class="fas fa-camera"></i>
                         </span>
                       </label>
                     </div>

@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\clientService;
 use App\Models\Country;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\serviceCategory;
 use App\Models\State;
 use Illuminate\Http\Request;
@@ -19,20 +20,79 @@ class clientController extends Controller
 {
     public function index(Request $request)
     {
-        $clients = Client::withCount(['invoices', 'services'])
-        ->latest();
+        return view('client.index');
+    }
 
-        if (!empty($request->get('search'))) {
-            $clients = $clients->where(function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->get('search') . '%')
-                    ->orWhere('value', 'like', '%' . $request->get('search') . '%');
+    public function getClients(Request $request)
+{
+    try {
+        $query = Client::withCount(['invoices', 'services'])->latest();
+    
+        if ($request->has('search') && !empty($request->get('search')['value'])) {
+            $searchValue = $request->get('search')['value'];
+            $query->where(function ($query) use ($searchValue) {
+                $query->where('first_name', 'like', "%{$searchValue}%")
+                      ->orWhere('business', 'like', "%{$searchValue}%")
+                      ->orWhere('contact', 'like', "%{$searchValue}%");
             });
         }
-        $perPage = $request->get('perPage', 20);
-        $clients = $clients->paginate($perPage);
+    
+        if ($request->has('order')) {
+            $columnIndex = $request->get('order')[0]['column'];
+            $columnName = $request->get('columns')[$columnIndex]['data'];
+            $direction = $request->get('order')[0]['dir'];
 
-        return view('client.index', compact('clients'));
+            // Map DataTable columns to database columns
+            $columnMap = [
+                'name' => 'first_name',
+                'business' => 'business',
+                'contact' => 'contact',
+                'invoices_count' => 'invoices_count',
+                'services_count' => 'services_count'
+            ];
+
+            if (array_key_exists($columnName, $columnMap)) {
+                $query->orderBy($columnMap[$columnName], $direction);
+            }
+        }
+    
+        $perPage = $request->get('length', 10);
+        $page = $request->get('start', 0) / $perPage;
+        $totalRecords = $query->count();
+    
+        $clients = $query->skip($page * $perPage)->take($perPage)->get();
+    
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $totalRecords,
+            'data' => $clients->map(function ($client) {
+                return [
+                    'name' => '<a href="'.route('client.show', $client->id).'">'.$client->first_name.'<a>', // Update to use first_name
+                    'business' => $client->business,
+                    'contact' => $client->contact,
+                    'invoices_count' => $client->invoices_count,
+                    'services_count' => $client->services_count,
+                    'action' => '<div class="justify-content-end d-flex gap-2">
+                        <div class="edit">
+                            <a href="' . route('client.edit', $client->id) . '" class="btn btn-sm btn-success edit-item-btn">
+                                <i class="bx bxs-pencil"></i> Edit
+                            </a>
+                        </div>
+                        <div class="remove">
+                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                            data-bs-target="#confirmationModal" data-id="' . $client->id . '">
+                                <i class="bx bx-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>'
+                ];
+            })
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'An error occurred.'], 500);
     }
+}
 
     public function create()
     {
@@ -195,27 +255,157 @@ class clientController extends Controller
         $country = Country::find($client->country_id);
         $state = State::find($client->state_id);
         $city = City::find($client->city_id);
-        $search = $request->input('search');
-        $paymentSearch = $request->input('paymentSearch');
-        $invoices = $client->invoices();
-        if ($search) {
-            $invoices->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('value', 'like', '%' . $search . '%');
-            });
-        }
          // Collect all payments from the invoices
-    $payments = $client->invoices->flatMap(function($invoice) {
-        return $invoice->payments;
-    });
-    if ($paymentSearch) {
-        $payments->where(function ($query) use ($paymentSearch) {
-            $query->where('name', 'like', '%' . $paymentSearch . '%')
-                ->orWhere('value', 'like', '%' . $paymentSearch . '%');
+        return view('client.show', compact('client', 'country', 'state', 'city'));
+    }
+
+    public function getClientPayments(Request $request, $clientId)
+{
+    $client = Client::with('invoices.payments')->find($clientId);
+
+    if (empty($client)) {
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => 0,
+            'recordsFiltered' => 0,
+            'data' => []
+        ]);
+    }
+
+    // Build a query to get payments related to the client
+    $query = Payment::whereIn('invoice_id', $client->invoices->pluck('id'));
+
+    // Apply search filters
+    if ($request->has('search') && !empty($request->get('search')['value'])) {
+        $searchValue = $request->get('search')['value'];
+        $query->where(function ($q) use ($searchValue) {
+            $q->where('payment_date', 'like', "%{$searchValue}%")
+              ->orWhere('payment_mode', 'like', "%{$searchValue}%")
+              ->orWhere('due_payment', 'like', "%{$searchValue}%")
+              ->orWhere('amount', 'like', "%{$searchValue}%")
+              ->orWhereHas('invoice', function ($q) use ($searchValue) {
+                  $q->where('invoice_number', 'like', "%{$searchValue}%");
+              });
         });
     }
-        return view('client.show', compact('client', 'country', 'state', 'city', 'invoices','payments'));
+
+    // Apply sorting
+    if ($request->has('order')) {
+        $columnIndex = $request->get('order')[0]['column'];
+        $columnName = $request->get('columns')[$columnIndex]['data'];
+        $direction = $request->get('order')[0]['dir'];
+
+        $columnMap = [
+            'invoice' => 'invoice_id',
+            'payment_date' => 'payment_date',
+            'payment_mode' => 'payment_mode',
+            'amount' => 'amount',
+            'due_payment' => 'due_payment',
+        ];
+
+        if (array_key_exists($columnName, $columnMap)) {
+            $query->orderBy($columnMap[$columnName], $direction);
+        }
     }
+
+    // Pagination
+    $perPage = $request->get('length', 10);
+    $page = $request->get('start', 0) / $perPage;
+    $totalRecords = $query->count();
+
+    $payments = $query->skip($page * $perPage)->take($perPage)->get();
+    $invoiceController = new Invoices();
+    // Return data in the required format
+    return response()->json([
+        'draw' => intval($request->get('draw')),
+        'recordsTotal' => $totalRecords,
+        'recordsFiltered' => $totalRecords,
+        'data' => $payments->map(function ($payment) {
+            return [
+                'invoice' => '<a href="'.route('invoice.show', $payment->invoice->id).'">'.$payment->invoice->invoice_number.'</a>',
+                'payment_date' => $payment->payment_date,
+                'payment_mode' => $payment->payment_mode,
+                'amount' => $payment->amount,
+                'due_payment' => $payment->due_payment,
+            ];
+        })
+    ]);
+}
+
+// In ClientController.php
+public function getClientInvoices(Request $request, $clientId)
+{
+    $client = Client::with('invoices')->find($clientId);
+
+    if (empty($client)) {
+        return response()->json([
+            'draw' => intval($request->get('draw')),
+            'recordsTotal' => 0,
+            'recordsFiltered' => 0,
+            'data' => []
+        ]);
+    }
+
+    $invoices = $client->invoices();
+
+    // Filtering
+     if ($request->has('search') && !empty($request->get('search')['value'])) {
+        $searchValue = $request->get('search')['value'];
+        $invoices->where(function ($query) use ($searchValue) {
+            $query->where('invoice_number', 'like', "%{$searchValue}%")
+                ->orWhere('total', 'like', "%{$searchValue}%")
+                ->orWhere('due_amount', 'like', "%{$searchValue}%")
+                ->orWhere('invoice_status', 'like', "%{$searchValue}%");
+        });
+    }
+
+    // Sorting
+    if ($request->has('order')) {
+        $columnIndex = $request->get('order')[0]['column'];
+        $columnName = $request->get('columns')[$columnIndex]['data'];
+        $direction = $request->get('order')[0]['dir'];
+        // Map DataTable columns to database columns
+        $columnMap = [
+            'invoice' => 'invoice_number',
+            'invoice_date' => 'invoice_date',
+            'due_date' => 'due_date',
+            'total' => 'total',
+            'due' => 'due_amount',
+            'status' => 'invoice_status',
+        ];
+
+        if (array_key_exists($columnName, $columnMap)) {
+            $invoices->orderBy($columnMap[$columnName], $direction);
+        }
+    }
+
+    // Pagination
+    $perPage = $request->get('length', 10); // Number of records per page
+    $page = $request->get('start', 0) / $perPage; // Offset
+    $totalRecords = $invoices->count(); // Total records count
+
+    $invoices = $invoices->skip($page * $perPage)->take($perPage)->get(); // Fetch records
+
+    // Create an instance of InvoiceController to call getStatusBadge method
+    $invoiceController = new Invoices();
+
+    return response()->json([
+        'draw' => intval($request->get('draw')),
+        'recordsTotal' => $totalRecords,
+        'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
+        'data' => $invoices->map(function ($invoice) use ($invoiceController) {
+            return [
+                'invoice' => '<a href="' . route('invoice.show', $invoice->id) . '">' . $invoice->invoice_number . '</a>',
+                'invoice_date' => $invoice->invoice_date,
+                'due_date' => $invoice->due_date,
+                'total' => $invoice->total,
+                'due' => $invoice->due_amount,
+                'status' => $invoiceController->getStatusBadge($invoice->invoice_status),
+            ];
+        })
+    ]);
+}
+
     public function exportClientPayments($id) {
         $client = Client::with('invoices.payments')->find($id);
         if (empty($client)) {
@@ -245,4 +435,6 @@ class clientController extends Controller
 
     return $pdf;
     }
+    
+
 }

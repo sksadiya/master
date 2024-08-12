@@ -1,9 +1,6 @@
-.profile-user .app-logo-input {
-  display: none;
+.app-fevicon-input , .app-logo-input {
+  display:none;
 }
-.profile-user .app-fevicon-input {
-  display: none;
-}
-.profile-user .bill-input {
-  display: none;
+.navbar-menu .navbar-nav .nav-link i  {
+  font-size: 14px;
 }

@@ -24,82 +24,23 @@ products
                 <a href="<?php echo e(route('product.add')); ?>" type="button" class="btn btn-primary add-btn" ><i class="bx bx-plus-circle me-2"></i> Add Product</a>
               </div>
             </div>
-            <div class="col-sm">
-              <form method="GET" action="<?php echo e(route('products')); ?>" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="<?php echo e(request()->get('search')); ?>" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="<?php echo e(route('products')); ?>" type="button" class="btn bg-primary text-light">Reset</a>
-                </div>
-              </form>
-            </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="productTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="product-name">product Name</th>
-                  <th class="sort" data-sort="product-category">Product Category</th>
-                  <th class="sort" data-sort="product-price">Price</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>product Name</th>
+                  <th>Product Category</th>
+                  <th>Price</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                <?php if($products): ?>
-          <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <tr>
-        <td class="product-name"><?php echo e($product->name); ?></td>
-        <td class="product-category"><?php echo e($product->category->name); ?></td>
-        <td class="product-price"><?php echo e($product->unit_price); ?></td>
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="<?php echo e(route('product.edit',$product->id)); ?>" class="btn btn-sm btn-success edit-item-btn" ><i class="bx bxs-pencil"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#productDeleteModal" data-id="<?php echo e($product->id); ?>"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-        <?php else: ?>
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    <?php endif; ?>
+               
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-              <?php echo e($products->links()); ?>
-
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item product-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item product-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item product-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item product-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -168,18 +109,32 @@ products
     });
   <?php endif; ?>
 
+  
   $(document).ready(function() {
-    $('.dropdown-item.product-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '<?php echo e($products->url($products->currentPage())); ?>' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-    var productsList = new List('productsList', {
-      valueNames: ['product-name', 'product-category', 'product-price','action'],
-    });
-
-    $('.remove-item-btn').on('click', function () {
+    $('#productTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '<?php echo e(route('products.data')); ?>',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'name', name: 'name' },
+        { data: 'category', name: 'category' },
+        { data: 'price', name: 'unit_price' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
+    $('#productTable').on('click', '.remove-item-btn' ,function () {
       var productId = $(this).data('id');
       $('#delete-record').data('id', productId);
     });

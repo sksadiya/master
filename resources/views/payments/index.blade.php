@@ -27,92 +27,29 @@ Payments
               </div>
             </div>
             <div class="col-sm">
-              <form method="GET" action="{{ route('payments') }}" id="searchForm">
                 <div class="d-flex justify-content-sm-end">
                 <a href="{{ route('exportPayments') }}" type="button" class="btn btn-outline-success btn-border me-2">PDF Export</a>
                 <a href="{{ route('export-payments') }}" type="button" class="btn btn-outline-success btn-border">Excel Export</a>
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput"
-                      value="{{ request()->get('search') }}" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="{{ route('payments') }}" type="button" class="btn bg-primary text-light">reset</a>
-
                 </div>
-              </form>
             </div>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="categoryTable">
+            <table class="table align-middle table-nowrap" id="paymentTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="payment-invoice-number">Invoice</th>
-                  <th class="sort" data-sort="payment-date">Payment Date</th>
-                  <th class="sort" data-sort="payment-mode">Payment Mode</th>
-                  <th class="sort" data-sort="payment-total">Payment Amount</th>
-                  <th class="sort" data-sort="payment-due">Due Amount</th>
-                  <th class="sort" data-sort="payment-action">Action</th>
+                  <th>Invoice</th>
+                  <th>Payment Date</th>
+                  <th>Payment Mode</th>
+                  <th>Payment Amount</th>
+                  <th>Due Amount</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                @if($payments)
-          @foreach ($payments as $payment)
-        <tr>
-        <td class="payment-invoice-number"><a
-          href="{{ route('invoice.show', $payment->invoice->id)}}">{{ $payment->invoice->invoice_number }}</a>
-        </td>
-        <td class="payment-date">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') }}</td>
-        <td class="payment-mode">{{ $payment->payment_mode}}</td>
-        <td class="payment-total">{{ $payment->amount }}</td>
-        <td class="payment-due">{{ $payment->due_payment }}</td>
-
-        <td class="">
-        <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editPaymentModal" data-id="{{ $payment->id }}" data-invoice="{{ $payment->invoice_id }}"
-          data-payment-method="{{ $payment->payment_mode }}" data-payment-note="{{ $payment->notes }}" data-payment-date="{{ $payment->payment_date}}" data-payment-amount="{{ $payment->amount}}"><i class="bx bxs-pencil"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#confirmationModal" data-id="{{ $payment->id }}"><i class="bx bx-trash"></i>
-          Delete</button>
-          </div>
-        </div>
-        </td>
-        </tr>
-      @endforeach
-        @else
-      <tr>
-        <td colspan="2" class="text-center">Result Not found</td>
-      </tr>
-    @endif
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                {{ $payments->links() }}
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item payment-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item payment-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item payment-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item payment-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
@@ -179,7 +116,7 @@ Payments
   </div>
 </div>
 
-<!-- Edit Tax Modal -->
+<!-- Edit payment Modal -->
 <div class="modal fade" id="editPaymentModal" tabindex="-1" aria-labelledby="editPaymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -270,8 +207,6 @@ Payments
 
 @section('script')
 <script src="{{ URL::asset('build/libs/prismjs/prism.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.js/list.min.js') }}"></script>
-<script src="{{ URL::asset('build/libs/list.pagination.js/list.pagination.min.js') }}"></script>
 <script src="{{ URL::asset('build/select2/js/select2.min.js') }}"></script>
 <script src="{{ URL::asset('build/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
@@ -305,17 +240,32 @@ Payments
   @endif
 
   $(document).ready(function () {
-    $('.dropdown-item.payment-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '{{ $payments->url($payments->currentPage()) }}' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
-    var paymentList = new List('paymentList', {
-      valueNames: ['payment-invoice-number', 'payment-date', 'payment-mode', 'payment-total',
-        'payment-due'],
-    });
-
+    
+    $('#paymentTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('payments.data') }}',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+      { data: 'invoice', name: 'invoice_number' },
+        { data: 'payment_date', name: 'payment_date' },
+        { data: 'payment_mode', name: 'payment_mode' },
+        { data: 'amount', name: 'amount' },
+        { data: 'due_payment', name: 'due_payment' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'desc']],
+    pageLength: 10
+});
     $('#addPaymentModal').on('shown.bs.modal', function () {
       $('#invoice').select2({
         dropdownParent: $('#addPaymentModal') // Ensure dropdown is appended to modal
@@ -382,7 +332,7 @@ Payments
       $('.invalid-feedback').text('');
     });
    
-    $('.edit-item-btn').on('click', function () {
+    $('#paymentTable').on('click', '.edit-item-btn' ,function () {
       var paymentId = $(this).data('id');
       var paymentInvoice = $(this).data('invoice');
       var paymentMethod = $(this).data('payment-method');
@@ -457,7 +407,7 @@ Payments
     });
 
     
-    $('.remove-item-btn').on('click', function () {
+    $('#paymentTable').on('click','.remove-item-btn' ,function () {
       var paymentId = $(this).data('id');
       $('#delete-record').data('id', paymentId);
     });

@@ -44,40 +44,6 @@ if (document.querySelector("#profile-img-file-input")) {
         }
     });
 }
-if (document.querySelector("#app-logo-input")) {
-    document.querySelector("#app-logo-input").addEventListener("change", function () {
-        var preview = document.querySelector(".app-logo-image");
-        var file = document.querySelector(".app-logo-input").files[0];
-        var reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            function () {
-                preview.src = reader.result;
-            },
-            false
-        );
-        if (file) {
-            reader.readAsDataURL(file);
-        }
-    });
-}
-if (document.querySelector("#bill-input")) {
-    document.querySelector("#bill-input").addEventListener("change", function () {
-        var preview = document.querySelector(".bill-image");
-        var file = document.querySelector(".bill-input").files[0];
-        var reader = new FileReader();
-        reader.addEventListener(
-            "load",
-            function () {
-                preview.src = reader.result;
-            },
-            false
-        );
-        if (file) {
-            reader.readAsDataURL(file);
-        }
-    });
-}
 if (document.querySelector("#app-fevicon-input")) {
     document.querySelector("#app-fevicon-input").addEventListener("change", function () {
         var preview = document.querySelector(".app-fevicon-image");
@@ -95,7 +61,23 @@ if (document.querySelector("#app-fevicon-input")) {
         }
     });
 }
-
+if (document.querySelector("#app-logo-input")) {
+    document.querySelector("#app-logo-input").addEventListener("change", function () {
+        var preview = document.querySelector(".app-logo-image");
+        var file = document.querySelector(".app-logo-input").files[0];
+        var reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            function () {
+                preview.src = reader.result;
+            },
+            false
+        );
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
+}
 
 var count = 2;
 
