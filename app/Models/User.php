@@ -22,6 +22,11 @@ public function isEmployee()
     {
         return $this->role === 2;
     }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
     /**
      * The attributes that are mass assignable.
      *

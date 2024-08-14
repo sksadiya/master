@@ -1,0 +1,12 @@
+.app-fevicon-input , .app-logo-input {
+  display:none;
+}
+.navbar-menu .navbar-nav .nav-link i  {
+  font-size: 14px;
+}
+.favourite-btn  {
+  color: gray !important;
+}
+.favourite-btn.active .fa-star {
+  color: #f7b84b !important;
+}

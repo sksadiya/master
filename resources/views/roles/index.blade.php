@@ -21,7 +21,7 @@ Roles
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
-                <a href="{{ route('role.add') }}" type="button" class="btn btn-primary add-btn"><i class="bx bx-plus-circle me-2"></i> Add Role</a>
+                <a href="{{ route('role.add') }}" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add Role</a>
               </div>
             </div>
             <div class="col-sm">
@@ -41,56 +41,16 @@ Roles
             <table class="table align-middle table-nowrap" id="roleTable">
               <thead class="table-light">
                 <tr>
-                  <th class="sort" data-sort="role-name">Role Name</th>
-                  <th class="sort" data-sort="action">Action</th>
+                  <th>Role Name</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-                @if($roles)
-                  @foreach ($roles as $role)
-                    <tr>
-                      <td class="role-name">{{ $role->name }}</td>
-                      <td class="">
-                        <div class="justify-content-end d-flex gap-2">
-                          <div class="edit">
-                            <a href="{{ route('role.edit',$role->id) }}" class="btn btn-sm btn-success edit-item-btn"><i class="bx bxs-pencil"></i> Edit</a>
-                          </div>
-                          <div class="remove">
-                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#roleDeleteModal" data-id="{{ $role->id }}"><i class="bx bx-trash"></i> Delete</button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  @endforeach
-                @else
-                  <tr>
-                    <td colspan="2" class="text-center">Result Not Found</td>
-                  </tr>
-                @endif
+              
               </tbody>
             </table>
           </div>
-          <div class="row">
-            <div class="col-md-6 justify-content-start">
-              <div class="pagination-wrap hstack gap-2">
-                {{ $roles->links() }}
-              </div>
-            </div>
-            <div class="col-md-6 justify-content-end d-flex">
-              <div class="dropdown">
-                <button class="btn bg-primary btn-secondary dropdown-toggle" type="button" id="perPageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  Per Page
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="perPageDropdown">
-                  <li><a class="dropdown-item role-per-page-item" href="#" data-per-page="20">20</a></li>
-                  <li><a class="dropdown-item role-per-page-item" href="#" data-per-page="30">30</a></li>
-                  <li><a class="dropdown-item role-per-page-item" href="#" data-per-page="50">50</a></li>
-                  <li><a class="dropdown-item role-per-page-item" href="#" data-per-page="100">100</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
+        
         </div>
       </div>
     </div>
@@ -159,18 +119,23 @@ Roles
   @endif
 
   $(document).ready(function() {
-    $('.dropdown-item.role-per-page-item').on('click', function (e) {
-      e.preventDefault();
-      var perPage = $(this).data('per-page');
-      var url = '{{ $roles->url($roles->currentPage()) }}' + '&perPage=' + perPage;
-      window.location.href = url;
-    });
+    $('#roleTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '{{ route('roles.data') }}',
+        type: 'GET',
+        
+    },
+    columns: [
+        { data: 'name', name: 'name' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
 
-    var rolesList = new List('rolesList', {
-      valueNames: ['role-name','action'],
-    });
-
-    $('.remove-item-btn').on('click', function () {
+    $('#roleTable').on('click', '.remove-item-btn',function () {
         var roleId = $(this).data('id');
         $('#delete-record').data('id', roleId);
     });

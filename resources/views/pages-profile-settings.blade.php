@@ -17,7 +17,7 @@
                         enctype="multipart/form-data">
                         @csrf
                         <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
-                            <img src="{{ URL::asset('images/' . Auth::user()->avatar) }}"
+                            <img src="{{ URL::asset('public/images/' . Auth::user()->avatar) }}"
                                 class="rounded-circle avatar-xl img-thumbnail user-profile-image material-shadow"
                                 alt="user-profile-image">
                             <div class="avatar-xs p-0 rounded-circle profile-photo-edit">

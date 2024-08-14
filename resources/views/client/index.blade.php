@@ -21,7 +21,7 @@ Clients
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
-                <a href="{{ route('client.add') }}" type="button" class="btn btn-primary add-btn"><i class="bx bx-plus-circle me-2"></i> Add Client</a>
+                <a href="{{ route('client.add') }}" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add Client</a>
               </div>
             </div>
           </div>

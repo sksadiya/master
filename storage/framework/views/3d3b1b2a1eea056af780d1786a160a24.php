@@ -16,7 +16,7 @@
                         enctype="multipart/form-data">
                         <?php echo csrf_field(); ?>
                         <div class="profile-user position-relative d-inline-block mx-auto  mb-4">
-                            <img src="<?php echo e(URL::asset('images/' . Auth::user()->avatar)); ?>"
+                            <img src="<?php echo e(URL::asset('public/images/' . Auth::user()->avatar)); ?>"
                                 class="rounded-circle avatar-xl img-thumbnail user-profile-image material-shadow"
                                 alt="user-profile-image">
                             <div class="avatar-xs p-0 rounded-circle profile-photo-edit">

@@ -66,6 +66,15 @@ Route::post('taxes', [App\Http\Controllers\taxController::class, 'store'])->name
 Route::put('/taxes/{id}', [App\Http\Controllers\taxController::class, 'update'])->name('tax.update');
 Route::delete('/taxes/{id}', [App\Http\Controllers\taxController::class, 'destroy'])->name('tax.delete');
 Route::post('/taxes/{id}', [App\Http\Controllers\taxController::class, 'setDefaultTax'])->name('setDefault');
+
+
+Route::get('notes/data', [App\Http\Controllers\NotesController::class, 'getNotes'])->name('notes.data');
+Route::get('notes', [App\Http\Controllers\NotesController::class, 'index'])->name('notes');
+Route::post('notes', [App\Http\Controllers\NotesController::class, 'store'])->name('note.add');
+Route::put('/notes/{id}', [App\Http\Controllers\NotesController::class, 'update'])->name('note.update');
+Route::delete('/notes/{id}', [App\Http\Controllers\NotesController::class, 'destroy'])->name('note.delete');
+Route::post('/update-note-starred/{id}', [App\Http\Controllers\NotesController::class, 'updateStarred'])->name('update.noteStatus');
+
 // In routes/web.php
 Route::get('/client/{clientId}/invoices', [App\Http\Controllers\clientController::class, 'getClientInvoices'])->name('client.invoices');
 Route::get('/client-payments/{clientId}', [App\Http\Controllers\clientController::class, 'getClientPayments'])->name('client.payments.get');
@@ -94,6 +103,7 @@ Route::get('product/edit/{id}', [App\Http\Controllers\ProductController::class, 
 Route::post('product/update/{id}', [App\Http\Controllers\ProductController::class, 'update'])->name('product.update');
 Route::delete('/product/{id}', [App\Http\Controllers\ProductController::class, 'destroy'])->name('product.delete');
 
+Route::get('roles/data', [App\Http\Controllers\RolesAndPermissions::class, 'getRoles'])->name('roles.data');
 Route::get('roles', [App\Http\Controllers\RolesAndPermissions::class, 'index'])->name('roles');
 Route::post('role', [App\Http\Controllers\RolesAndPermissions::class, 'store'])->name('role.store');
 Route::get('role', [App\Http\Controllers\RolesAndPermissions::class, 'create'])->name('role.add');

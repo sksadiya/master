@@ -14,20 +14,20 @@
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#employeeDetails" role="tab">
-                            <i class="fas fa-home"></i> Employee Details
+                            <i class="fas fa-user"></i> Employee Details
                         </a>
                     </li>
                     @if($employee->passbook || $employee->pan_file || $employee->adhar_file)
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#documents" role="tab">
-                                <i class="far fa-user"></i> Documents
+                            <i class="far fa-file"></i> Documents
                             </a>
                         </li>
                     @endif
                     @if($expenses->isNotEmpty())
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#bills" role="tab">
-                                <i class="far fa-user"></i> Bills
+                            <i class="fas fa-file-pdf"></i> Bills
                             </a>
                         </li>
                     @endif
@@ -128,13 +128,13 @@
                             @if($employee->pan_file)
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="{{ URL::asset('images/uploads/documents/' . $employee->pan_file) }}" title="">
+                                        href="{{ URL::asset('public/images/uploads/documents/' . $employee->pan_file) }}" title="">
                                         @if(pathinfo($employee->pan_file, PATHINFO_EXTENSION) == 'pdf')
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="{{ URL::asset('build/images/pdf-icon.png') }}" alt="PDF Document" />
                                         @else
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="{{ URL::asset('images/uploads/documents/' . $employee->pan_file) }}"
+                                                src="{{ URL::asset('public/images/uploads/documents/' . $employee->pan_file) }}"
                                                 alt="PAN Document" />
                                         @endif
                                         <div class="gallery-overlay mt-3">
@@ -145,7 +145,7 @@
                                         <div class="d-flex align-items-center mt-1">
                                             @if(pathinfo($employee->pan_file, PATHINFO_EXTENSION) !== 'pdf')
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="{{ URL::asset('images/uploads/documents/' . $employee->pan_file) }}"
+                                                    <a href="{{ URL::asset('public/images/uploads/documents/' . $employee->pan_file) }}"
                                                         target="_blank" download class="download-button">
                                                         <i class="bx bx-cloud-download"></i>
                                                     </a>
@@ -158,14 +158,14 @@
                             @if($employee->adhar_file)
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="{{ URL::asset('images/uploads/documents/' . $employee->adhar_file) }}"
+                                        href="{{ URL::asset('public/images/uploads/documents/' . $employee->adhar_file) }}"
                                         title="">
                                         @if(pathinfo($employee->adhar_file, PATHINFO_EXTENSION) == 'pdf')
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="{{ URL::asset('build/images/pdf-icon.png') }}" alt="PDF Document" />
                                         @else
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="{{ URL::asset('images/uploads/documents/' . $employee->adhar_file) }}"
+                                                src="{{ URL::asset('public/images/uploads/documents/' . $employee->adhar_file) }}"
                                                 alt="PAN Document" />
                                         @endif
                                         <div class="gallery-overlay mt-3">
@@ -176,7 +176,7 @@
                                         <div class="d-flex align-items-center mt-1">
                                             @if(pathinfo($employee->adhar_file, PATHINFO_EXTENSION) !== 'pdf')
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="{{ URL::asset('images/uploads/documents/' . $employee->adhar_file) }}"
+                                                    <a href="{{ URL::asset('public/images/uploads/documents/' . $employee->adhar_file) }}"
                                                         target="_blank" download class="download-button">
                                                         <i class="bx bx-cloud-download"></i>
                                                     </a>
@@ -189,13 +189,13 @@
                             @if($employee->passbook)
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="{{ URL::asset('images/uploads/documents/' . $employee->passbook) }}" title="">
+                                        href="{{ URL::asset('public/images/uploads/documents/' . $employee->passbook) }}" title="">
                                         @if(pathinfo($employee->passbook, PATHINFO_EXTENSION) == 'pdf')
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="{{ URL::asset('build/images/pdf-icon.png') }}" alt="PDF Document" />
                                         @else
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="{{ URL::asset('images/uploads/documents/' . $employee->passbook) }}"
+                                                src="{{ URL::asset('public/images/uploads/documents/' . $employee->passbook) }}"
                                                 alt="PAN Document" />
                                         @endif
                                         <div class="gallery-overlay mt-3 ">
@@ -206,9 +206,9 @@
                                         <div class="d-flex align-items-center mt-1">
                                             @if(pathinfo($employee->passbook, PATHINFO_EXTENSION) !== 'pdf')
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="{{ URL::asset('images/uploads/documents/' . $employee->passbook) }}"
+                                                    <a href="{{ URL::asset('public/images/uploads/documents/' . $employee->passbook) }}"
                                                         target="_blank" download class="download-button">
-                                                        <i class="bx bx-cloud-download"></i>
+                                                        <i class="fas fa-download"></i>
                                                     </a>
                                                 </div>
                                             @endif
@@ -226,13 +226,13 @@
                                 @if($expense->bill_file)
                                     <div class="card me-3" style="width: 18rem;">
                                         <a class="image-popup" target="_blank"
-                                            href="{{ URL::asset('images/uploads/bills/' . $expense->bill_file) }}" title="">
+                                            href="{{ URL::asset('public/images/uploads/bills/' . $expense->bill_file) }}" title="">
                                             @if(pathinfo($expense->bill_file, PATHINFO_EXTENSION) == 'pdf')
                                                 <img class="gallery-img img-fluid mx-auto card-img-top"
                                                     src="{{ URL::asset('build/images/pdf-icon.png') }}" alt="PDF Document" />
                                             @else
                                                 <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                    src="{{ URL::asset('images/uploads/bills/' . $expense->bill_file) }}"
+                                                    src="{{ URL::asset('public/images/uploads/bills/' . $expense->bill_file) }}"
                                                     alt="PAN Document" />
                                             @endif
                                             <div class="gallery-overlay mt-3 ">
@@ -243,7 +243,7 @@
                                             <div class="d-flex align-items-center mt-1">
                                                 @if(pathinfo($expense->bill_file, PATHINFO_EXTENSION) !== 'pdf')
                                                     <div class="flex-grow-1 text-muted">
-                                                        <a href="{{ URL::asset('images/uploads/bills/' . $expense->bill_file) }}"
+                                                        <a href="{{ URL::asset('public/images/uploads/bills/' . $expense->bill_file) }}"
                                                             target="_blank" download class="download-button">
                                                             <i class="bx bx-cloud-download"></i>
                                                         </a>

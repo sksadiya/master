@@ -11,18 +11,7 @@ use Spatie\LaravelPdf\Facades\Pdf;
 class Payments extends Controller
 {
     public function index(Request $request) {
-    // $payments = Payment::with('invoice');
         $invoices = Invoice::all();
-        // if (!empty($request->get('search'))) {
-        //     $payments = $payments->where(function ($query) use ($request) {
-        //         $query->where('name', 'like', '%' . $request->get('search') . '%')
-        //             ->orWhere('value', 'like', '%' . $request->get('search') . '%');
-        //     });
-        // }
-
-        // $perPage = $request->get('perPage', 20);
-        // $payments = $payments->paginate($perPage);
-
         return view('payments.index', compact('invoices'));
     }
     public function getPayments(Request $request)
@@ -82,11 +71,11 @@ class Payments extends Controller
                     <div class="edit">
                     <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
                     data-bs-target="#editPaymentModal" data-id="'. $payment->id .'" data-invoice="'. $payment->invoice_id .'"
-                    data-payment-method="'. $payment->payment_mode .'" data-payment-note="'. $payment->notes .'" data-payment-date="'. $payment->payment_date.'" data-payment-amount="'. $payment->amount.'"><i class="bx bxs-pencil"></i> Edit</button>
+                    data-payment-method="'. $payment->payment_mode .'" data-payment-note="'. $payment->notes .'" data-payment-date="'. $payment->payment_date.'" data-payment-amount="'. $payment->amount.'"><i class="fas fa-pen"></i> Edit</button>
                     </div>
                     <div class="remove">
                     <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#confirmationModal" data-id="'. $payment->id .'"><i class="bx bx-trash"></i>
+                    data-bs-target="#confirmationModal" data-id="'. $payment->id .'"><i class="fas fa-trash"></i>
                     Delete</button>
                     </div>
                     </div>'

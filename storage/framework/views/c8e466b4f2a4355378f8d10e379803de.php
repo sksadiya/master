@@ -15,20 +15,20 @@
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#employeeDetails" role="tab">
-                            <i class="fas fa-home"></i> Employee Details
+                            <i class="fas fa-user"></i> Employee Details
                         </a>
                     </li>
                     <?php if($employee->passbook || $employee->pan_file || $employee->adhar_file): ?>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#documents" role="tab">
-                                <i class="far fa-user"></i> Documents
+                            <i class="far fa-file"></i> Documents
                             </a>
                         </li>
                     <?php endif; ?>
                     <?php if($expenses->isNotEmpty()): ?>
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#bills" role="tab">
-                                <i class="far fa-user"></i> Bills
+                            <i class="fas fa-file-pdf"></i> Bills
                             </a>
                         </li>
                     <?php endif; ?>
@@ -129,13 +129,13 @@
                             <?php if($employee->pan_file): ?>
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->pan_file)); ?>" title="">
+                                        href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->pan_file)); ?>" title="">
                                         <?php if(pathinfo($employee->pan_file, PATHINFO_EXTENSION) == 'pdf'): ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="<?php echo e(URL::asset('build/images/pdf-icon.png')); ?>" alt="PDF Document" />
                                         <?php else: ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="<?php echo e(URL::asset('images/uploads/documents/' . $employee->pan_file)); ?>"
+                                                src="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->pan_file)); ?>"
                                                 alt="PAN Document" />
                                         <?php endif; ?>
                                         <div class="gallery-overlay mt-3">
@@ -146,7 +146,7 @@
                                         <div class="d-flex align-items-center mt-1">
                                             <?php if(pathinfo($employee->pan_file, PATHINFO_EXTENSION) !== 'pdf'): ?>
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->pan_file)); ?>"
+                                                    <a href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->pan_file)); ?>"
                                                         target="_blank" download class="download-button">
                                                         <i class="bx bx-cloud-download"></i>
                                                     </a>
@@ -159,14 +159,14 @@
                             <?php if($employee->adhar_file): ?>
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->adhar_file)); ?>"
+                                        href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->adhar_file)); ?>"
                                         title="">
                                         <?php if(pathinfo($employee->adhar_file, PATHINFO_EXTENSION) == 'pdf'): ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="<?php echo e(URL::asset('build/images/pdf-icon.png')); ?>" alt="PDF Document" />
                                         <?php else: ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="<?php echo e(URL::asset('images/uploads/documents/' . $employee->adhar_file)); ?>"
+                                                src="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->adhar_file)); ?>"
                                                 alt="PAN Document" />
                                         <?php endif; ?>
                                         <div class="gallery-overlay mt-3">
@@ -177,7 +177,7 @@
                                         <div class="d-flex align-items-center mt-1">
                                             <?php if(pathinfo($employee->adhar_file, PATHINFO_EXTENSION) !== 'pdf'): ?>
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->adhar_file)); ?>"
+                                                    <a href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->adhar_file)); ?>"
                                                         target="_blank" download class="download-button">
                                                         <i class="bx bx-cloud-download"></i>
                                                     </a>
@@ -190,13 +190,13 @@
                             <?php if($employee->passbook): ?>
                                 <div class="card me-3" style="width: 18rem;">
                                     <a class="image-popup" target="_blank"
-                                        href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->passbook)); ?>" title="">
+                                        href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->passbook)); ?>" title="">
                                         <?php if(pathinfo($employee->passbook, PATHINFO_EXTENSION) == 'pdf'): ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
                                                 src="<?php echo e(URL::asset('build/images/pdf-icon.png')); ?>" alt="PDF Document" />
                                         <?php else: ?>
                                             <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                src="<?php echo e(URL::asset('images/uploads/documents/' . $employee->passbook)); ?>"
+                                                src="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->passbook)); ?>"
                                                 alt="PAN Document" />
                                         <?php endif; ?>
                                         <div class="gallery-overlay mt-3 ">
@@ -207,9 +207,9 @@
                                         <div class="d-flex align-items-center mt-1">
                                             <?php if(pathinfo($employee->passbook, PATHINFO_EXTENSION) !== 'pdf'): ?>
                                                 <div class="flex-grow-1 text-muted">
-                                                    <a href="<?php echo e(URL::asset('images/uploads/documents/' . $employee->passbook)); ?>"
+                                                    <a href="<?php echo e(URL::asset('public/images/uploads/documents/' . $employee->passbook)); ?>"
                                                         target="_blank" download class="download-button">
-                                                        <i class="bx bx-cloud-download"></i>
+                                                        <i class="fas fa-download"></i>
                                                     </a>
                                                 </div>
                                             <?php endif; ?>
@@ -227,13 +227,13 @@
                                 <?php if($expense->bill_file): ?>
                                     <div class="card me-3" style="width: 18rem;">
                                         <a class="image-popup" target="_blank"
-                                            href="<?php echo e(URL::asset('images/uploads/bills/' . $expense->bill_file)); ?>" title="">
+                                            href="<?php echo e(URL::asset('public/images/uploads/bills/' . $expense->bill_file)); ?>" title="">
                                             <?php if(pathinfo($expense->bill_file, PATHINFO_EXTENSION) == 'pdf'): ?>
                                                 <img class="gallery-img img-fluid mx-auto card-img-top"
                                                     src="<?php echo e(URL::asset('build/images/pdf-icon.png')); ?>" alt="PDF Document" />
                                             <?php else: ?>
                                                 <img class="gallery-img img-fluid mx-auto card-img-top"
-                                                    src="<?php echo e(URL::asset('images/uploads/bills/' . $expense->bill_file)); ?>"
+                                                    src="<?php echo e(URL::asset('public/images/uploads/bills/' . $expense->bill_file)); ?>"
                                                     alt="PAN Document" />
                                             <?php endif; ?>
                                             <div class="gallery-overlay mt-3 ">
@@ -244,7 +244,7 @@
                                             <div class="d-flex align-items-center mt-1">
                                                 <?php if(pathinfo($expense->bill_file, PATHINFO_EXTENSION) !== 'pdf'): ?>
                                                     <div class="flex-grow-1 text-muted">
-                                                        <a href="<?php echo e(URL::asset('images/uploads/bills/' . $expense->bill_file)); ?>"
+                                                        <a href="<?php echo e(URL::asset('public/images/uploads/bills/' . $expense->bill_file)); ?>"
                                                             target="_blank" download class="download-button">
                                                             <i class="bx bx-cloud-download"></i>
                                                         </a>

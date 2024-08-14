@@ -10,13 +10,6 @@ class serviceCategoryController extends Controller
 {
 
          public function index(Request $request) {
-        // $categories = serviceCategory::withCount('clients')->latest();
-
-        // if (!empty($request->get('search'))) {
-        //     $categories = $categories->where('name', 'like', '%' . $request->get('search') . '%');
-        // }
-        // $perPage = $request->get('perPage', 20); 
-        // $categories = $categories->paginate($perPage);
         return view('service_categories.index');
     }
     
@@ -66,11 +59,11 @@ class serviceCategoryController extends Controller
                                     <div class="edit">
                                     <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
                                     data-bs-target="#editServiceCategoryModal" data-id="'. $category->id .'"
-                                    data-name="'. $category->name .'"><i class="bx bxs-pencil"></i> Edit</button>
+                                    data-name="'. $category->name .'"><i class="fas fa-pen"></i> Edit</button>
                                     </div>
                                     <div class="remove">
                                     <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="bx bx-trash"></i> Delete</button>
+                                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="fas fa-trash"></i> Delete</button>
                                     </div>
                                     </div>'
                     ];

@@ -21,7 +21,7 @@ Employees
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
-                <a href="<?php echo e(route('employee.add')); ?>" type="button" class="btn btn-primary add-btn"><i class="bx bx-plus-circle me-2"></i> Add employee</a>
+                <a href="<?php echo e(route('employee.add')); ?>" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add employee</a>
               </div>
             </div>
           </div>

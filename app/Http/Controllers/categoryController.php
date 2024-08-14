@@ -51,11 +51,11 @@ class categoryController extends Controller
                     <div class="edit">
                         <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
                         data-bs-target="#editCategoryModal" data-id="' . $category->id . '"
-                        data-name="' . $category->name . '"><i class="bx bxs-pencil"></i> Edit</button>
+                        data-name="' . $category->name . '"><i class="fas fa-pen"></i> Edit</button>
                     </div>
                     <div class="remove">
                         <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                        data-bs-target="#deleteRecordModal" data-id="' . $category->id . '"><i class="bx bx-trash"></i> Delete</button>
+                        data-bs-target="#deleteRecordModal" data-id="' . $category->id . '"><i class="fas fa-trash"></i> Delete</button>
                     </div>
                 </div>'
                 ];

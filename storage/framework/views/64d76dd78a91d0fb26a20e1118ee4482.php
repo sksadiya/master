@@ -23,7 +23,7 @@ Payments
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-                  data-bs-target="#addPaymentModal"><i class="bx bx-plus-circle me-2"></i>Add Payments</button>
+                  data-bs-target="#addPaymentModal"><i class="fas fa-plus-circle me-2"></i>Add Payments</button>
               </div>
             </div>
             <div class="col-sm">

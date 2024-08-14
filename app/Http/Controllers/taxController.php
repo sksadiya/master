@@ -64,11 +64,11 @@ class taxController extends Controller
           <div class="edit">
           <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
           data-bs-target="#editTaxModal" data-id="'. $tax->id .'" data-name="'. $tax->name .'"
-          data-value="'. $tax->value .'"><i class="bx bxs-pencil"></i> Edit</button>
+          data-value="'. $tax->value .'"><i class="fas fa-pen"></i> Edit</button>
           </div>
           <div class="remove">
           <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteTaxModal" data-id="'. $tax->id .'"><i class="bx bx-trash"></i>
+          data-bs-target="#deleteTaxModal" data-id="'. $tax->id .'"><i class="fas fa-trash"></i>
           Delete</button>
           </div>
         </div>'

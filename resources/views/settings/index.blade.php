@@ -172,7 +172,7 @@ App Settings
                     <span>App Logo <span class="text-danger">*</span></span>
                   </div>
                   <div class="profile-user position-relative d-inline-block mx-auto mb-4">
-                    <img src="{{ URL::asset('images/uploads/' . $settings['app-logo']) }}"
+                    <img src="{{ URL::asset('public/images/uploads/' . $settings['app-logo']) }}"
                       class="rounded-circle avatar-xl img-thumbnail app-logo-image material-shadow"
                       alt="app-logo-image">
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
@@ -192,7 +192,7 @@ App Settings
                     <span>App Fevicon <span class="text-danger">*</span></span>
                   </div>
                   <div class="profile-user position-relative d-inline-block mx-auto mb-4">
-                    <img src="{{ URL::asset('images/uploads/' . $settings['app-fevicon']) }}"
+                    <img src="{{ URL::asset('public/images/uploads/' . $settings['app-fevicon']) }}"
                       class="rounded-circle avatar-xl img-thumbnail app-fevicon-image material-shadow"
                       alt="app-fevicon-image">
                     <div class="avatar-xs p-0 rounded-circle profile-photo-edit">

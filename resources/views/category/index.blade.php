@@ -22,7 +22,7 @@ Categories
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-                  data-bs-target="#addCategoryModal"><i class="bx bx-plus-circle me-2"></i> Add Category</button>
+                  data-bs-target="#addCategoryModal"><i class="fas fa-plus-circle me-2"></i> Add Category</button>
               </div>
             </div>
           </div>

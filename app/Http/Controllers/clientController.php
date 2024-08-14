@@ -76,13 +76,13 @@ class clientController extends Controller
                     'action' => '<div class="justify-content-end d-flex gap-2">
                         <div class="edit">
                             <a href="' . route('client.edit', $client->id) . '" class="btn btn-sm btn-success edit-item-btn">
-                                <i class="bx bxs-pencil"></i> Edit
+                                <i class="fas fa-pen"></i> Edit
                             </a>
                         </div>
                         <div class="remove">
                             <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
                             data-bs-target="#confirmationModal" data-id="' . $client->id . '">
-                                <i class="bx bx-trash"></i> Delete
+                                <i class="fas fa-trash"></i> Delete
                             </button>
                         </div>
                     </div>'

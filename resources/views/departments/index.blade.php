@@ -22,7 +22,7 @@ Departments
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-                  data-bs-target="#addDepartmentModel"><i class="bx bx-plus-circle me-2"></i> Add department</button>
+                  data-bs-target="#addDepartmentModel"><i class="fas fa-plus-circle me-2"></i> Add department</button>
               </div>
             </div>
           </div>

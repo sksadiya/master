@@ -23,7 +23,7 @@ Expenses
             <div class="col-sm-auto">
               <div>
                 <a href="{{ route('expense.add') }}" type="button" class="btn btn-primary add-btn"><i
-                    class="bx bx-plus-circle me-2"></i> Add Expense</a>
+                    class="fas fa-plus-circle me-2"></i> Add Expense</a>
               </div>
             </div>
           </div>

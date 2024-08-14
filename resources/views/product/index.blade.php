@@ -21,7 +21,7 @@ products
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
-                <a href="{{ route('product.add') }}" type="button" class="btn btn-primary add-btn" ><i class="bx bx-plus-circle me-2"></i> Add Product</a>
+                <a href="{{ route('product.add') }}" type="button" class="btn btn-primary add-btn" ><i class="fas fa-plus-circle me-2"></i> Add Product</a>
               </div>
             </div>
           </div>

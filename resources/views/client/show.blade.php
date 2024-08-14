@@ -21,20 +21,20 @@
         <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
           <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#clientDetails" role="tab">
-              <i class="fas fa-home"></i> Client Details
+            <i class="far fa-user"></i> Client Details
             </a>
           </li>
           @if($client->invoices->count() > 0)
         <li class="nav-item">
         <a class="nav-link" data-bs-toggle="tab" href="#invoices" role="tab">
-          <i class="far fa-user"></i> Invoices
+        <i class="fas fa-file-invoice"></i> Invoices
         </a>
         </li>
       @endif
           @if($client->invoices->pluck('payments')->flatten()->isNotEmpty())
         <li class="nav-item">
         <a class="nav-link" data-bs-toggle="tab" href="#payments" role="tab">
-          <i class="far fa-user"></i> Payments
+        <i class="fas fa-money-check"></i> Payments
         </a>
         </li>
       @endif

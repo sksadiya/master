@@ -22,7 +22,7 @@ Taxes
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-                  data-bs-target="#addTaxModal"><i class="bx bx-plus-circle me-2"></i> Add Tax</button>
+                  data-bs-target="#addTaxModal"><i class="fas fa-plus-circle me-2"></i> Add Tax</button>
               </div>
             </div>
           </div>
