@@ -44,7 +44,7 @@
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
                         id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
                         aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-edit"></i>
+                        <i class="far fa-sticky-note"></i>
                         <span
                             class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"><?php echo e($notesCount); ?><span
                                 class="visually-hidden">unread messages</span></span>

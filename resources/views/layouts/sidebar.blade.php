@@ -63,6 +63,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('tasks') }}" >
+                    <i class="fas fa-tasks"></i> <span>Tasks</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('invoices') }}" >
                     <i class="fas fa-file-invoice"></i> <span>Invoices</span>
                     </a>
@@ -99,7 +104,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('notes') }}" >
-                    <i class="fas fa-edit"></i> <span>Notes</span>
+                    <i class="far fa-sticky-note"></i> <span>Notes</span>
                     </a>
                 </li>
                 <li class="nav-item">

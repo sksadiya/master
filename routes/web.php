@@ -156,6 +156,8 @@ Route::post('serviceCategories', [App\Http\Controllers\serviceCategoryController
 Route::put('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'update'])->name('serviceCategory.update');
 Route::delete('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'destroy'])->name('serviceCategory.delete');
 
+Route::get('tasks', [App\Http\Controllers\taskController::class, 'index'])->name('tasks');
+Route::get('task/add', [App\Http\Controllers\taskController::class, 'create'])->name('task.add');
 });
 
 
