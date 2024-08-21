@@ -156,8 +156,14 @@ Route::post('serviceCategories', [App\Http\Controllers\serviceCategoryController
 Route::put('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'update'])->name('serviceCategory.update');
 Route::delete('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'destroy'])->name('serviceCategory.delete');
 
+Route::get('tasks/data', [App\Http\Controllers\taskController::class, 'getTasks'])->name('tasks.data');
 Route::get('tasks', [App\Http\Controllers\taskController::class, 'index'])->name('tasks');
 Route::get('task/add', [App\Http\Controllers\taskController::class, 'create'])->name('task.add');
+Route::post('task/store', [App\Http\Controllers\taskController::class, 'store'])->name('task.store');
+Route::get('/task/edit/{id}', [App\Http\Controllers\taskController::class, 'edit'])->name('task.edit');
+Route::post('/task/update/{id}', [App\Http\Controllers\taskController::class, 'update'])->name('task.update');
+Route::delete('/task/{id}', [App\Http\Controllers\taskController::class, 'destroy'])->name('task.delete');
+Route::get('task/{id}', [App\Http\Controllers\taskController::class, 'show'])->name('task.show');
 });
 
 

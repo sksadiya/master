@@ -105,7 +105,6 @@ class ExpenseController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $success = false;
-
         $expense = new Expense();
         $expense->title = $request->title;
         $expense->date = $request->date;

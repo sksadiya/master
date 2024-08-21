@@ -29,6 +29,7 @@ Tasks
                 <tr>
                   <th>Title</th>
                   <th>Status</th>
+                  <th>Due Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -43,7 +44,7 @@ Tasks
 </div>
 
 <!-- Delete Confirmation Modal -->
-<!-- <div class="modal fade zoomIn" id="deleteNotesModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade zoomIn" id="confirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -55,7 +56,7 @@ Tasks
             colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
           <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
             <h4>Are you sure?</h4>
-            <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Note?</p>
+            <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Task?</p>
           </div>
         </div>
         <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
@@ -65,7 +66,7 @@ Tasks
       </div>
     </div>
   </div>
-</div> -->
+</div>
 
 <?php $__env->stopSection(); ?>
 
@@ -75,7 +76,85 @@ Tasks
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
     $(document).ready(function() {
+      <?php if(Session::has('success')): ?>
+    Swal.fire({
+    title: 'Success!',
+    text: '<?php echo e(Session::get('success')); ?>',
+    icon: 'success',
+    showCancelButton: false,
+    customClass: {
+      confirmButton: 'btn btn-primary w-xs me-2 mt-2',
+    },
+    buttonsStyling: false,
+    showCloseButton: true
+    });
+  <?php endif; ?>
 
+  <?php if(Session::has('error')): ?>
+    Swal.fire({
+    title: 'Error!',
+    text: "<?php echo e(Session::get('error')); ?>",
+    icon: 'error',
+    showCancelButton: false,
+    customClass: {
+      confirmButton: 'btn btn-danger w-xs mt-2',
+    },
+    buttonsStyling: false,
+    showCloseButton: true
+    });
+  <?php endif; ?>
+    });
+    $('#tasksTable').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+        url: '<?php echo e(route('tasks.data')); ?>',
+        type: 'GET',
+        dataSrc: function (json) {
+            console.log('Data received:', json);
+            return json.data;
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            console.error('AJAX error:', textStatus, errorThrown);
+        }
+    },
+    columns: [
+        { data: 'title', name: 'title' },
+        { data: 'status', name: 'status' },
+        { data: 'due_date', name: 'due_date' },
+        { data: 'action', name: 'action', orderable: false, searchable: false }
+    ],
+    order: [[0, 'asc'], [1, 'desc']], // Example of default multi-column ordering
+    pageLength: 10
+});
+$('#tasksTable').on('click', '.remove-item-btn',function () {
+      var taskId = $(this).data('id');
+      $('#delete-record').data('id', taskId);
+    });
+    $('#delete-record').on('click', function () {
+      var taskId = $(this).data('id');
+      console.log(taskId);
+      const delRoute = "<?php echo e(route('task.delete', 'ID')); ?>";
+      const newdelRoute = delRoute.replace('ID', taskId);
+
+      $.ajax({
+        type: 'DELETE',
+        url: newdelRoute,
+        data: {
+          _token: '<?php echo e(csrf_token()); ?>'
+        },
+        success: function (response) {
+          if (response.status) {
+            $('#confirmationModal').hide();
+            console.log(response.status);
+            location.reload();
+          }
+        },
+        error: function (response) {
+          $('#confirmationModal').hide();
+          location.reload();
+        }
+      });
     });
 </script>
 <?php $__env->stopSection(); ?>
