@@ -61,7 +61,7 @@ class taskController extends Controller
                 return [
                     'title' => '<a href="'.route('task.show',$task->id).'">'.$task->title.'</a>',
                     'status' => $task->status,
-                    'due_date' =>  \Carbon\Carbon::parse($task->date)->format('d/m/Y') ,
+                    'due_date' =>  \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') ,
                     'action' =>'<div class="justify-content-end d-flex gap-2">
                         <div class="edit">
                         <a href="'. route('task.edit',$task->id).'"
@@ -166,11 +166,31 @@ class taskController extends Controller
 
   public function show($id, Request $request)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::with('comments')->findOrFail($id);
         if (empty($task)) {
             Session::flash('error', 'No Task Found!');
             return redirect()->back();
         }
-        return view('task.show', compact('task'));
+        $dueDate = $task->due_date; // Assuming `due_date` is in 'Y-m-d H:i:s' format
+        $currentDateTime = now();
+
+        if ($currentDateTime->greaterThan($dueDate)) {
+            $remainingSeconds = 0;
+        } else {
+            $remainingSeconds = $currentDateTime->diffInSeconds($dueDate);
+        }
+        return view('task.show', compact('task', 'remainingSeconds'));
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,completed',
+        ]);
+        $task->status = $request->input('status');
+        $task->save();
+
+        // Redirect or return a response
+        return redirect()->route('tasks')->with('success', 'Task status updated successfully.');
     }
 }

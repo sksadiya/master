@@ -15,7 +15,8 @@ Edit Task
         <h4 class="card-title mb-0">Edit task</h4>
       </div>
       <div class="card-body p-4">
-        <form action="{{ route('task.update', $task->id )}}" method="post" id="expense-create-form" name="expense-create-form" enctype="multipart/form-data">
+        <form action="{{ route('task.update', $task->id)}}" method="post" id="expense-create-form"
+          name="expense-create-form" enctype="multipart/form-data">
           @csrf
           <div class="row">
             <div class="col-md-6">
@@ -33,10 +34,10 @@ Edit Task
             <div class="col-md-6">
               <div class="mb-3">
                 <label for="status">Status</label>
-                <select name="status" id="status" class="form-control @error('status') is-invalid @enderror" >
-                  <option {{ ($task->status == 'pending') ? 'selected':'' }} value="pending">Pending</option>
-                  <option {{ ($task->status == 'in_progress') ? 'selected':'' }} value="in_progress">Inprogress</option>
-                  <option {{ ($task->status == 'completed') ? 'selected':'' }} value="completed">Completed</option>
+                <select name="status" id="status" class="form-control @error('status') is-invalid @enderror">
+                  <option {{ ($task->status == 'pending') ? 'selected' : '' }} value="pending">Pending</option>
+                  <option {{ ($task->status == 'in_progress') ? 'selected' : '' }} value="in_progress">Inprogress</option>
+                  <option {{ ($task->status == 'completed') ? 'selected' : '' }} value="completed">Completed</option>
                 </select>
                 @error('status')
           <div class="invalid-feedback">
@@ -49,9 +50,9 @@ Edit Task
               <div class="mb-3">
                 <label for="priority">Priority</label>
                 <select name="priority" id="priority" class="form-control @error('priority') is-invalid @enderror">
-                  <option {{ ($task->priority == '') ? 'selected':'low' }} value="low">Low</option>
-                  <option {{ ($task->priority == '') ? 'selected':'medium' }} value="medium">Medium</option>
-                  <option {{ ($task->priority == '') ? 'selected':'high' }} value="high">High</option>
+                  <option {{ ($task->priority == '') ? 'selected' : 'low' }} value="low">Low</option>
+                  <option {{ ($task->priority == '') ? 'selected' : 'medium' }} value="medium">Medium</option>
+                  <option {{ ($task->priority == '') ? 'selected' : 'high' }} value="high">High</option>
                 </select>
                 @error('priority')
           <div class="invalid-feedback">
@@ -67,7 +68,8 @@ Edit Task
                   multiple="multiple">
                   @if($users)
             @foreach ($users as $user)
-        <option {{ in_array($user->id, $task->assignees->pluck('id')->toArray()) ? 'selected' : '' }} value="{{ $user->id }}">{{ $user->name }}</option>
+        <option {{ in_array($user->id, $task->assignees->pluck('id')->toArray()) ? 'selected' : '' }}
+        value="{{ $user->id }}">{{ $user->name }}</option>
       @endforeach
           @endif
                 </select>
@@ -94,7 +96,7 @@ Edit Task
               <div class="mb-3">
                 <label for="description">Description</label>
                 <textarea rows="3" class="form-control @error('description') is-invalid @enderror" name="description"
-                  id="description" placeholder="Description" value="{{ $task->description }}"></textarea>
+                  id="description" placeholder="Description">{{ $task->description }}</textarea>
                 @error('description')
           <div class="invalid-feedback">
             {{ $message }}
@@ -129,7 +131,7 @@ Edit Task
     $('#assign_to').select2();
     flatpickr("#due_date", {
       dateFormat: "Y-m-d",
-        });
+    });
   });
 </script>
 @endsection

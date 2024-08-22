@@ -14,7 +14,8 @@ Edit Task
         <h4 class="card-title mb-0">Edit task</h4>
       </div>
       <div class="card-body p-4">
-        <form action="<?php echo e(route('task.update', $task->id )); ?>" method="post" id="expense-create-form" name="expense-create-form" enctype="multipart/form-data">
+        <form action="<?php echo e(route('task.update', $task->id)); ?>" method="post" id="expense-create-form"
+          name="expense-create-form" enctype="multipart/form-data">
           <?php echo csrf_field(); ?>
           <div class="row">
             <div class="col-md-6">
@@ -54,10 +55,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" >
-                  <option <?php echo e(($task->status == 'pending') ? 'selected':''); ?> value="pending">Pending</option>
-                  <option <?php echo e(($task->status == 'in_progress') ? 'selected':''); ?> value="in_progress">Inprogress</option>
-                  <option <?php echo e(($task->status == 'completed') ? 'selected':''); ?> value="completed">Completed</option>
+unset($__errorArgs, $__bag); ?>">
+                  <option <?php echo e(($task->status == 'pending') ? 'selected' : ''); ?> value="pending">Pending</option>
+                  <option <?php echo e(($task->status == 'in_progress') ? 'selected' : ''); ?> value="in_progress">Inprogress</option>
+                  <option <?php echo e(($task->status == 'completed') ? 'selected' : ''); ?> value="completed">Completed</option>
                 </select>
                 <?php $__errorArgs = ['status'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -85,9 +86,9 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>">
-                  <option <?php echo e(($task->priority == '') ? 'selected':'low'); ?> value="low">Low</option>
-                  <option <?php echo e(($task->priority == '') ? 'selected':'medium'); ?> value="medium">Medium</option>
-                  <option <?php echo e(($task->priority == '') ? 'selected':'high'); ?> value="high">High</option>
+                  <option <?php echo e(($task->priority == '') ? 'selected' : 'low'); ?> value="low">Low</option>
+                  <option <?php echo e(($task->priority == '') ? 'selected' : 'medium'); ?> value="medium">Medium</option>
+                  <option <?php echo e(($task->priority == '') ? 'selected' : 'high'); ?> value="high">High</option>
                 </select>
                 <?php $__errorArgs = ['priority'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -118,7 +119,9 @@ unset($__errorArgs, $__bag); ?>"
                   multiple="multiple">
                   <?php if($users): ?>
             <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <option <?php echo e(in_array($user->id, $task->assignees->pluck('id')->toArray()) ? 'selected' : ''); ?> value="<?php echo e($user->id); ?>"><?php echo e($user->name); ?></option>
+        <option <?php echo e(in_array($user->id, $task->assignees->pluck('id')->toArray()) ? 'selected' : ''); ?>
+
+        value="<?php echo e($user->id); ?>"><?php echo e($user->name); ?></option>
       <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           <?php endif; ?>
                 </select>
@@ -175,7 +178,7 @@ $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" name="description"
-                  id="description" placeholder="Description" value="<?php echo e($task->description); ?>"></textarea>
+                  id="description" placeholder="Description"><?php echo e($task->description); ?></textarea>
                 <?php $__errorArgs = ['description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -218,7 +221,7 @@ unset($__errorArgs, $__bag); ?>
     $('#assign_to').select2();
     flatpickr("#due_date", {
       dateFormat: "Y-m-d",
-        });
+    });
   });
 </script>
 <?php $__env->stopSection(); ?>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Task_Note extends Model
 {
     use HasFactory;
+    protected $table = 'task_notes';
     protected $fillable = ['task_id', 'user_id', 'comment'];
     public function task()
     {

@@ -164,6 +164,9 @@ Route::get('/task/edit/{id}', [App\Http\Controllers\taskController::class, 'edit
 Route::post('/task/update/{id}', [App\Http\Controllers\taskController::class, 'update'])->name('task.update');
 Route::delete('/task/{id}', [App\Http\Controllers\taskController::class, 'destroy'])->name('task.delete');
 Route::get('task/{id}', [App\Http\Controllers\taskController::class, 'show'])->name('task.show');
+Route::post('/task/{id}/status', [App\Http\Controllers\taskController::class, 'updateStatus'])->name('task.updateStatus');
+
+Route::post('taskNotes/store', [App\Http\Controllers\taskNotesController::class, 'store'])->name('comment.store');
 });
 
 

@@ -6071,14 +6071,14 @@ code {
     opacity: 0;
     visibility: hidden;
 }
-#status {
+/* #status {
     width: 40px;
     height: 40px;
     position: absolute;
     left: 50%;
     top: 50%;
     margin: -20px 0 0 -20px;
-}
+} */
 :is([type="tel"], [type="url"], [type="email"], [type="number"])::placeholder {
     text-align: left;
 }
