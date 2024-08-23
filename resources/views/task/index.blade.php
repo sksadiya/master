@@ -19,11 +19,13 @@ Tasks
       <div class="card-body">
         <div class="listjs-table" id="tasksList">
           <div class="row g-4 mb-3">
+            @can('Create Tasks')
             <div class="col-sm-auto">
               <div>
                 <a href="{{ route('task.add') }}" class="btn btn-primary"><i class="fas fa-plus-circle me-2"></i>Add Task</a>
               </div>
             </div>
+            @endcan
           </div>
           <div class="table-responsive table-card mt-3 mb-1">
             <table class="table align-middle table-nowrap" id="tasksTable">
@@ -32,7 +34,9 @@ Tasks
                   <th>Title</th>
                   <th>Status</th>
                   <th>Due Date</th>
-                  <th>Action</th>
+                  @if(Auth::user()->can('Edit Tasks') || Auth::user()->can('Delete Tasks'))
+                      <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">

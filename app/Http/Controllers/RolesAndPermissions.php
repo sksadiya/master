@@ -99,6 +99,12 @@ class RolesAndPermissions extends Controller
         'settings' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Settings') || str_contains($permission->name, 'Dashboard');
         }),
+        'Tasks' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Tasks');
+        }),
+        'Tasks Notes' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Task Notes');
+        }),
       
     ];
         // $permissions = Permission::all();
@@ -161,7 +167,12 @@ class RolesAndPermissions extends Controller
         'settings' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Settings') || str_contains($permission->name, 'Dashboard');
         }),
-       
+       'Tasks' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Tasks');
+        }),
+        'Tasks Notes' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Task Notes');
+        }),
     ];
         return view('roles.edit', compact('permissions', 'role'));
     }

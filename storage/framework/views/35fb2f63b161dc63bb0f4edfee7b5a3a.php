@@ -62,11 +62,20 @@
                     <i class="fas fa-user-tie"></i> <span>Employees</span>
                     </a>
                 </li>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Tasks')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('tasks')); ?>" >
                     <i class="fas fa-tasks"></i> <span>Tasks</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Task Notes')): ?>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="<?php echo e(route('taskNotes')); ?>" >
+                    <i class="far fa-file"></i><span>Task Notes</span>
+                    </a>
+                </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('invoices')); ?>" >
                     <i class="fas fa-file-invoice"></i> <span>Invoices</span>

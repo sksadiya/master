@@ -17,11 +17,13 @@ Tasks
       <div class="card-body">
         <div class="listjs-table" id="tasksList">
           <div class="row g-4 mb-3">
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Create Tasks')): ?>
             <div class="col-sm-auto">
               <div>
                 <a href="<?php echo e(route('task.add')); ?>" class="btn btn-primary"><i class="fas fa-plus-circle me-2"></i>Add Task</a>
               </div>
             </div>
+            <?php endif; ?>
           </div>
           <div class="table-responsive table-card mt-3 mb-1">
             <table class="table align-middle table-nowrap" id="tasksTable">
@@ -30,7 +32,9 @@ Tasks
                   <th>Title</th>
                   <th>Status</th>
                   <th>Due Date</th>
-                  <th>Action</th>
+                  <?php if(Auth::user()->can('Edit Tasks') || Auth::user()->can('Delete Tasks')): ?>
+                      <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">

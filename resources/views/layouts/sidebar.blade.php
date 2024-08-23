@@ -62,11 +62,20 @@
                     <i class="fas fa-user-tie"></i> <span>Employees</span>
                     </a>
                 </li>
+                @can('View Tasks')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('tasks') }}" >
                     <i class="fas fa-tasks"></i> <span>Tasks</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Task Notes')
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('taskNotes') }}" >
+                    <i class="far fa-file"></i><span>Task Notes</span>
+                    </a>
+                </li>
+                @endcan
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('invoices') }}" >
                     <i class="fas fa-file-invoice"></i> <span>Invoices</span>

@@ -206,7 +206,7 @@ Task Details
                                 </div>
                             @endforeach
                         </div>
-                        <form action="{{ route('comment.store') }}" class="mt-4" method="post"
+                        <form action="{{ route('comment.create') }}" class="mt-4" method="post"
                             enctype="multipart/form-data">
                             @csrf
                             <div class="row g-3">

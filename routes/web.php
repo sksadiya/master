@@ -156,17 +156,41 @@ Route::post('serviceCategories', [App\Http\Controllers\serviceCategoryController
 Route::put('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'update'])->name('serviceCategory.update');
 Route::delete('/serviceCategory/{id}', [App\Http\Controllers\serviceCategoryController::class, 'destroy'])->name('serviceCategory.delete');
 
+Route::group(['middleware' => ['permission:View Tasks']], function () {
 Route::get('tasks/data', [App\Http\Controllers\taskController::class, 'getTasks'])->name('tasks.data');
 Route::get('tasks', [App\Http\Controllers\taskController::class, 'index'])->name('tasks');
-Route::get('task/add', [App\Http\Controllers\taskController::class, 'create'])->name('task.add');
+});
+Route::group(['middleware' => ['permission:Create Tasks']], function () { 
+  Route::get('task/add', [App\Http\Controllers\taskController::class, 'create'])->name('task.add');
 Route::post('task/store', [App\Http\Controllers\taskController::class, 'store'])->name('task.store');
+});
+
+Route::group(['middleware' => ['permission:Edit Tasks']], function () { 
 Route::get('/task/edit/{id}', [App\Http\Controllers\taskController::class, 'edit'])->name('task.edit');
 Route::post('/task/update/{id}', [App\Http\Controllers\taskController::class, 'update'])->name('task.update');
+});
+Route::group(['middleware' => ['permission:Delete Tasks']], function () { 
 Route::delete('/task/{id}', [App\Http\Controllers\taskController::class, 'destroy'])->name('task.delete');
-Route::get('task/{id}', [App\Http\Controllers\taskController::class, 'show'])->name('task.show');
-Route::post('/task/{id}/status', [App\Http\Controllers\taskController::class, 'updateStatus'])->name('task.updateStatus');
+});
+Route::group(['middleware' => ['permission:Show Tasks']], function () { 
+    Route::get('task/{id}', [App\Http\Controllers\taskController::class, 'show'])->name('task.show');
+    Route::post('/task/{id}/status', [App\Http\Controllers\taskController::class, 'updateStatus'])->name('task.updateStatus');
+    Route::post('taskNotes/create', [App\Http\Controllers\taskController::class, 'createNotes'])->name('comment.create');
+});
+Route::group(['middleware' => ['permission:View Task Notes']], function () {
+Route::get('taskNotes', [App\Http\Controllers\taskNotesController::class, 'index'])->name('taskNotes');
+Route::get('taskNotes/data', [App\Http\Controllers\taskNotesController::class, 'getTaskNotes'])->name('taskNotes.data');
+});
+Route::group(['middleware' => ['permission:Create Task Notes']], function () {
+  Route::post('taskNotes', [App\Http\Controllers\taskNotesController::class, 'store'])->name('taskNote.add');
+});
+Route::group(['middleware' => ['permission:Edit Task Notes']], function () {
+  Route::post('/taskNotes/{id}', [App\Http\Controllers\taskNotesController::class, 'update'])->name('taskNote.update');
+});
+Route::group(['middleware' => ['permission:Delete Task Notes']], function () {
+  Route::delete('/taskNote/{id}', [App\Http\Controllers\taskNotesController::class, 'destroy'])->name('taskNote.delete');
+});
 
-Route::post('taskNotes/store', [App\Http\Controllers\taskNotesController::class, 'store'])->name('comment.store');
 });
 
 

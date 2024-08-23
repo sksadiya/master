@@ -26,8 +26,9 @@ class DatabaseSeeder extends Seeder
         // $this->call([
         //     ClientSeeder::class,
         // ]);
-        $this->call([
-            PaymentSeeder::class,
-        ]);
+        // $this->call([
+        //     PaymentSeeder::class,
+        // ]);
+        $this->call(PermissionsTableSeeder::class);
     }
 }

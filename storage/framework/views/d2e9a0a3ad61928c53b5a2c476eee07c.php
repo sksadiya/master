@@ -222,7 +222,7 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                        <form action="<?php echo e(route('comment.store')); ?>" class="mt-4" method="post"
+                        <form action="<?php echo e(route('comment.create')); ?>" class="mt-4" method="post"
                             enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
                             <div class="row g-3">
