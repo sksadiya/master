@@ -14,10 +14,7 @@ class PermissionsTableSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'View Task Notes',
-            'Create Task Notes',
-            'Edit Task Notes',
-            'Delete Task Notes',
+         'Show Clients'
         ];
 
         // Create permissions

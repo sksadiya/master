@@ -19,11 +19,13 @@ Employees
       <div class="card-body">
         <div class="listjs-table" id="employeesList">
           <div class="row g-4 mb-3">
+            @can('Add Employees')
             <div class="col-sm-auto">
               <div>
                 <a href="{{ route('employee.add') }}" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add employee</a>
               </div>
             </div>
+            @endcan
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
@@ -34,7 +36,9 @@ Employees
                   <th>Department</th>
                   <th>Email</th>
                   <th>Contact</th>
+                  @if(Auth::user()->can('Edit Employees') || Auth::user()->can('Delete Employees'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -47,8 +51,9 @@ Employees
     </div>
   </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
+                    
+@can('Delete Employees')
+  <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="confirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -72,6 +77,8 @@ Employees
     </div>
   </div>
 </div>
+@endcan
+
 
 @endsection
 

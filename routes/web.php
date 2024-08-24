@@ -45,21 +45,37 @@ Route::delete('/expenseCategories/{id}', [App\Http\Controllers\expenseCategoryCo
 
 Route::group(['middleware' => ['permission:View Departments']], function () {
   Route::get('departments', [App\Http\Controllers\DepartmentController::class, 'index'])->name('departments');
+  Route::get('departments/data', [App\Http\Controllers\DepartmentController::class, 'getDepartments'])->name('departments.data');
 });
-Route::get('departments/data', [App\Http\Controllers\DepartmentController::class, 'getDepartments'])->name('departments.data');
-Route::post('departments', [App\Http\Controllers\DepartmentController::class, 'store'])->name('department.add');
-Route::put('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'update'])->name('department.update');
-Route::delete('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'destroy'])->name('department.delete');
+Route::group(['middleware' => ['permission:Edit Departments']], function () {
+  Route::put('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'update'])->name('department.update');
+});
+Route::group(['middleware' => ['permission:Add Departments']], function () {
+  Route::post('departments', [App\Http\Controllers\DepartmentController::class, 'store'])->name('department.add');
+});
+Route::group(['middleware' => ['permission:Delete Departments']], function () {
+  Route::delete('/departments/{id}', [App\Http\Controllers\DepartmentController::class, 'destroy'])->name('department.delete');
+});
 
-Route::get('employees/data', [App\Http\Controllers\EmployeeController::class, 'getEmployees'])->name('employees.data');
-Route::get('employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees');
-Route::get('employee/add', [App\Http\Controllers\EmployeeController::class, 'create'])->name('employee.add');
-Route::post('employee/store', [App\Http\Controllers\EmployeeController::class, 'store'])->name('employee.store');
+Route::group(['middleware' => ['permission:View Employees']], function () {
+  Route::get('employees/data', [App\Http\Controllers\EmployeeController::class, 'getEmployees'])->name('employees.data');
+  Route::get('employees', [App\Http\Controllers\EmployeeController::class, 'index'])->name('employees');
+});
+Route::group(['middleware' => ['permission:Add Employees']], function () {
+  Route::get('employee/add', [App\Http\Controllers\EmployeeController::class, 'create'])->name('employee.add');
+  Route::post('employee/store', [App\Http\Controllers\EmployeeController::class, 'store'])->name('employee.store');
+});
+
+Route::group(['middleware' => ['permission:Edit Employees']], function () {
+  Route::get('employee/edit/{id}', [App\Http\Controllers\EmployeeController::class, 'edit'])->name('employee.edit');
+  Route::post('employee/update/{id}', [App\Http\Controllers\EmployeeController::class, 'update'])->name('employee.update');
+});
+Route::group(['middleware' => ['permission:Delete Employees']], function () {
 Route::delete('/employee/{id}', [App\Http\Controllers\EmployeeController::class, 'destroy'])->name('employee.delete');
-Route::get('employee/edit/{id}', [App\Http\Controllers\EmployeeController::class, 'edit'])->name('employee.edit');
-Route::post('employee/update/{id}', [App\Http\Controllers\EmployeeController::class, 'update'])->name('employee.update');
+});
+Route::group(['middleware' => ['permission:Show Employees']], function () {
 Route::get('employee/{id}', [App\Http\Controllers\EmployeeController::class, 'show'])->name('employee.show');
-
+});
 Route::get('taxes/data', [App\Http\Controllers\taxController::class, 'getTaxes'])->name('taxes.data');
 Route::get('taxes', [App\Http\Controllers\taxController::class, 'index'])->name('taxes');
 Route::post('taxes', [App\Http\Controllers\taxController::class, 'store'])->name('tax.add');
@@ -78,14 +94,26 @@ Route::post('/update-note-starred/{id}', [App\Http\Controllers\NotesController::
 // In routes/web.php
 Route::get('/client/{clientId}/invoices', [App\Http\Controllers\clientController::class, 'getClientInvoices'])->name('client.invoices');
 Route::get('/client-payments/{clientId}', [App\Http\Controllers\clientController::class, 'getClientPayments'])->name('client.payments.get');
+
+Route::group(['middleware' => ['permission:View Clients']], function () {
 Route::get('clients/data', [App\Http\Controllers\clientController::class, 'getClients'])->name('clients.data');
 Route::get('client', [App\Http\Controllers\clientController::class, 'index'])->name('clients');
-Route::post('clients', [App\Http\Controllers\clientController::class, 'store'])->name('client.store');
-Route::get('clients', [App\Http\Controllers\clientController::class, 'create'])->name('client.add');
-Route::get('client/edit/{id}', [App\Http\Controllers\clientController::class, 'edit'])->name('client.edit');
-Route::post('client/update/{id}', [App\Http\Controllers\clientController::class, 'update'])->name('client.update');
-Route::delete('/client/{id}', [App\Http\Controllers\clientController::class, 'destroy'])->name('client.delete');
-Route::get('client/{id}', [App\Http\Controllers\clientController::class, 'show'])->name('client.show');
+});
+Route::group(['middleware' => ['permission:Add Clients']], function () {
+  Route::post('clients', [App\Http\Controllers\clientController::class, 'store'])->name('client.store');
+  Route::get('clients', [App\Http\Controllers\clientController::class, 'create'])->name('client.add');
+});
+Route::group(['middleware' => ['permission:Edit Clients']], function () { 
+  Route::get('client/edit/{id}', [App\Http\Controllers\clientController::class, 'edit'])->name('client.edit');
+  Route::post('client/update/{id}', [App\Http\Controllers\clientController::class, 'update'])->name('client.update');
+});
+Route::group(['middleware' => ['permission:Delete Clients']], function () { 
+  Route::delete('/client/{id}', [App\Http\Controllers\clientController::class, 'destroy'])->name('client.delete');
+});
+Route::group(['middleware' => ['permission:Show Clients']], function () { 
+  Route::get('client/{id}', [App\Http\Controllers\clientController::class, 'show'])->name('client.show');
+});
+
 Route::get('export-payments/{id}', [App\Http\Controllers\clientController::class, 'exportClientPayments'])->name('exportClientPayments');
 Route::get('export-invoices/{id}', [App\Http\Controllers\clientController::class, 'exportClientInvoices'])->name('exportClientInvoices');
 Route::get('clients/{clientId}/export-with-invoices', function ($clientId) {

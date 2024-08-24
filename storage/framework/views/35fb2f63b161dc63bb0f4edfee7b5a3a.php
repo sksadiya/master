@@ -40,11 +40,13 @@
                     <i class="fas fa-circle-notch"></i> <span>Dashboard</span>
                     </a>
                 </li>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Clients')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('clients')); ?>" >
                     <i class="fas fa-users"></i> <span>Clients</span>
                     </a>
                 </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('serviceCategories')); ?>" >
                     <i class="fas fa-layer-group"></i> <span>Service Categories</span>
@@ -57,11 +59,13 @@
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Employees')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('employees')); ?>" >
                     <i class="fas fa-user-tie"></i> <span>Employees</span>
                     </a>
                 </li>
+                <?php endif; ?>
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Tasks')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('tasks')); ?>" >

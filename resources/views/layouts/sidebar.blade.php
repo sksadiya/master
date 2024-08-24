@@ -40,11 +40,13 @@
                     <i class="fas fa-circle-notch"></i> <span>Dashboard</span>
                     </a>
                 </li>
+                @can('View Clients')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('clients') }}" >
                     <i class="fas fa-users"></i> <span>Clients</span>
                     </a>
                 </li>
+                @endcan
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('serviceCategories') }}" >
                     <i class="fas fa-layer-group"></i> <span>Service Categories</span>
@@ -57,11 +59,13 @@
                     </a>
                 </li>
                 @endcan
+                @can('View Employees')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('employees') }}" >
                     <i class="fas fa-user-tie"></i> <span>Employees</span>
                     </a>
                 </li>
+                @endcan
                 @can('View Tasks')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('tasks') }}" >

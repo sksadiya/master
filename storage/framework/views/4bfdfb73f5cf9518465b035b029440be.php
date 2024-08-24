@@ -21,7 +21,7 @@ Expense Categories
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-                  data-bs-target="#addExpenseCategorModal"><i class="fas fa-plus me-2"></i> Add Expense Category</button>
+                  data-bs-target="#addExpenseCategorModal"><i class="fas fa-plus-circle me-2"></i> Add Expense Category</button>
               </div>
             </div>
           </div>

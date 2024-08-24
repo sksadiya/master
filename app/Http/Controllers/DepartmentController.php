@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class DepartmentController extends Controller
@@ -64,20 +65,32 @@ class DepartmentController extends Controller
                 return [
                     'name' => $dept->name,
                     'employees_count' => $dept->employees_count,
-                    'action' => ' <div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editDepartmentModel" data-id="'. $dept->id .'"
-          data-name="'. $dept->name .'" data-description="'. $dept->description .'"><i class="fas fa-pen"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteRecordModal" data-id="'. $dept->id .'"><i class="fas fa-trash"></i> Delete</button>
-          </div>
-        </div>'
+                    'action' => $this->generateDepartmentActions($dept)
                 ];
             })
         ]);
+    }
+
+    private function generateDepartmentActions($dept)
+    {
+        $actions = '';
+
+        if (Auth::user()->can('Edit Departments')) {
+            $actions .= '<div class="edit">
+          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+          data-bs-target="#editDepartmentModel" data-id="'. $dept->id .'"
+          data-name="'. $dept->name .'" data-description="'. $dept->description .'"><i class="fas fa-pen"></i> Edit</button>
+          </div>';
+        }
+
+        if (Auth::user()->can('Delete Departments')) {
+            $actions .= '<div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#deleteRecordModal" data-id="'. $dept->id .'"><i class="fas fa-trash"></i> Delete</button>
+          </div>';
+        }
+
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
     public function store(Request $request)
     {

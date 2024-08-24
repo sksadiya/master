@@ -19,12 +19,14 @@ Departments
       <div class="card-body">
         <div class="listjs-table" id="departmentList">
           <div class="row g-4 mb-3">
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Departments')): ?>
             <div class="col-sm-auto">
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addDepartmentModel"><i class="fas fa-plus-circle me-2"></i> Add department</button>
               </div>
             </div>
+            <?php endif; ?>
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
@@ -33,7 +35,9 @@ Departments
                 <tr>
                   <th>Department</th>
                   <th>Employees</th>
+                  <?php if(Auth::user()->can('Edit Departments') || Auth::user()->can('Delete Departments')): ?>
                   <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -46,8 +50,8 @@ Departments
     </div>
   </div>
 </div>
-
-<!-- Add Category Modal -->
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Departments')): ?>
+<!-- Add department Modal -->
 <div class="modal fade" id="addDepartmentModel" tabindex="-1" aria-labelledby="addDepartmentModelLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -80,7 +84,8 @@ Departments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Edit Departments')): ?>
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editDepartmentModel" tabindex="-1" aria-labelledby="editDepartmentModelLabel"
   aria-hidden="true">
@@ -117,7 +122,8 @@ Departments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Delete Departments')): ?>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -142,7 +148,7 @@ Departments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>

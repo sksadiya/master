@@ -19,11 +19,13 @@ Clients
       <div class="card-body">
         <div class="listjs-table" id="clientsList">
           <div class="row g-4 mb-3">
+            @can('Add Clients')
             <div class="col-sm-auto">
               <div>
                 <a href="{{ route('client.add') }}" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add Client</a>
               </div>
             </div>
+            @endcan
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
@@ -35,7 +37,9 @@ Clients
                   <th>Contact</th>
                   <th>Invoices</th>
                   <th>Services</th>
+                  @if(Auth::user()->can('Edit Clients') || Auth::user()->can('Delete Clients'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -49,8 +53,8 @@ Clients
     </div>
   </div>
 </div>
-
-<!-- Delete Confirmation Modal -->
+@can('Delete Clients')
+  <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="confirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -74,6 +78,8 @@ Clients
     </div>
   </div>
 </div>
+@endcan
+
 
 @endsection
 

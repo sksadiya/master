@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -18,15 +19,7 @@ class EmployeeController extends Controller
 {
     public function index(Request $request)
     {
-        // $employees = Employee::latest();
-        // if (!empty($request->get('search'))) {
-        //     $employees = $employees->where(function ($query) use ($request) {
-        //         $query->where('name', 'like', '%' . $request->get('search') . '%')
-        //             ->orWhere('value', 'like', '%' . $request->get('search') . '%');
-        //     });
-        // }
-        // $perPage = $request->get('perPage', 20);
-        // $employees = $employees->paginate($perPage);
+        
         return view('employee.index');
     }
 
@@ -76,24 +69,37 @@ class EmployeeController extends Controller
             'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
             'data' => $employees->map(function ($employee) {
                 return [
-                    'name' => '<a href="'. route('employee.show',$employee->id).'">'.$employee->user->name.'</a>',
+                    'name' => auth()->user()->can('Show Employees')
+                    ? '<a href="'. route('employee.show', $employee->id) .'">'. $employee->user->name .'</a>'
+                    : $employee->user->name,
                     'department' => $employee->department->name,
                     'email' => $employee->user->email,
                     'contact' => $employee->user->contact,
-                    'action' =>'<div class="justify-content-end d-flex gap-2">
-                        <div class="edit">
-                        <a href="'. route('employee.edit' ,$employee->id).'" class="btn btn-sm btn-success edit-item-btn"><i
-                        class="fas fa-pen"></i> Edit</a>
-                        </div>
-                        <div class="remove">
-                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                        data-bs-target="#confirmationModal" data-id="'. $employee->id .'"><i class="fas fa-trash"></i>
-                        Delete</button>
-                        </div>
-                        </div>',
+                    'action' =>$this->generateEmployeeActions($employee),
                 ];
             })
         ]);
+    }
+    private function generateEmployeeActions($employee)
+    {
+        $actions = '';
+
+        if (Auth::user()->can('Edit Employees')) {
+            $actions .= '<div class="edit">
+                        <a href="'. route('employee.edit' ,$employee->id).'" class="btn btn-sm btn-success edit-item-btn"><i
+                        class="fas fa-pen"></i> Edit</a>
+                        </div>';
+        }
+
+        if (Auth::user()->can('Delete Employees')) {
+            $actions .= '<div class="remove">
+                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#confirmationModal" data-id="'. $employee->id .'"><i class="fas fa-trash"></i>
+                        Delete</button>
+                        </div>';
+        }
+
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
 
     public function create() {

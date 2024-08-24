@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\serviceCategory;
 use App\Models\State;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use App\Rules\GstNumber;
@@ -68,24 +69,14 @@ class clientController extends Controller
             'recordsFiltered' => $totalRecords,
             'data' => $clients->map(function ($client) {
                 return [
-                    'name' => '<a href="'.route('client.show', $client->id).'">'.$client->first_name.'<a>', // Update to use first_name
+                    'name' =>  auth()->user()->can('Show Clients')
+                    ? '<a href="'. route('client.show', $client->id) .'">'. $client->first_name .'</a>'
+                    : $client->first_name,
                     'business' => $client->business,
                     'contact' => $client->contact,
                     'invoices_count' => $client->invoices_count,
                     'services_count' => $client->services_count,
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-                        <div class="edit">
-                            <a href="' . route('client.edit', $client->id) . '" class="btn btn-sm btn-success edit-item-btn">
-                                <i class="fas fa-pen"></i> Edit
-                            </a>
-                        </div>
-                        <div class="remove">
-                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                            data-bs-target="#confirmationModal" data-id="' . $client->id . '">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </div>
-                    </div>'
+                    'action' => $this->generateClientActions($client),
                 ];
             })
         ]);
@@ -93,7 +84,26 @@ class clientController extends Controller
         return response()->json(['error' => 'An error occurred.'], 500);
     }
 }
-
+private function generateClientActions($client)
+{
+    $actions = '';
+    if (Auth::user()->can('Edit Clients')) {
+        $actions .= '<div class="edit">
+                            <a href="' . route('client.edit', $client->id) . '" class="btn btn-sm btn-success edit-item-btn">
+                                <i class="fas fa-pen"></i> Edit
+                            </a>
+                        </div>';
+    }
+    if (Auth::user()->can('Delete Clients')) {
+        $actions .= '<div class="remove">
+                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                            data-bs-target="#confirmationModal" data-id="' . $client->id . '">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>';
+    }
+    return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
+}
     public function create()
     {
         $countries = Country::all();

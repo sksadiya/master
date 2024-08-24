@@ -65,17 +65,17 @@
                             <div class="col-sm-6 d-flex flex-column mb-md-10 mb-3">
                                 <label for="name" class="">Country</label>
                                 <input type="text" name="country" id="country" readonly class="form-control"
-                                    value="{{ $country->name }}">
+                                    value="{{ $country->name ?? '' }}">
                             </div>
                             <div class="col-sm-6 d-flex flex-column mb-md-10 mb-3">
                                 <label for="name" class="">State</label>
                                 <input type="text" name="state" id="state" readonly class="form-control"
-                                    value="{{ $state->name }}">
+                                    value="{{ $state->name ?? '' }}">
                             </div>
                             <div class="col-sm-6 d-flex flex-column mb-md-10 mb-3">
                                 <label for="name" class="">City</label>
                                 <input type="text" name="city" id="city" readonly class="form-control"
-                                    value="{{ $city->name }}">
+                                    value="{{ $city->name ?? '' }}">
                             </div>
                             <div class="col-sm-6 d-flex flex-column mb-md-10 mb-3">
                                 <label for="name" class="">Address</label>
