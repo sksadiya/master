@@ -20,9 +20,11 @@ products
         <div class="listjs-table" id="productsList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add Products')
               <div>
                 <a href="{{ route('product.add') }}" type="button" class="btn btn-primary add-btn" ><i class="fas fa-plus-circle me-2"></i> Add Product</a>
               </div>
+              @endcan
             </div>
           </div>
 
@@ -33,7 +35,9 @@ products
                   <th>product Name</th>
                   <th>Product Category</th>
                   <th>Price</th>
+                  @if(Auth::user()->can('Edit Products') || Auth::user()->can('Delete Products'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -46,7 +50,7 @@ products
     </div>
   </div>
 </div>
-
+@can('Delete Products')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="productDeleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -71,7 +75,7 @@ products
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

@@ -18,10 +18,12 @@ Notes
         <div class="listjs-table" id="taxesList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Note')): ?>
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addNoteModel"><i class="fas fa-plus-circle me-2"></i> Add Notes</button>
               </div>
+              <?php endif; ?>
             </div>
           </div>
 
@@ -31,7 +33,9 @@ Notes
                 <tr>
                   <th>Title</th>
                   <th>Starred</th>
+                  <?php if(Auth::user()->can('Edit Note') || Auth::user()->can('Delete Note')): ?>
                   <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -43,8 +47,8 @@ Notes
     </div>
   </div>
 </div>
-
-<!-- Add Tax Modal -->
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Note')): ?>
+<!-- Add Note Modal -->
 <div class="modal fade" id="addNoteModel" tabindex="-1" aria-labelledby="addNoteModelLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -91,8 +95,9 @@ Notes
     </div>
   </div>
 </div>
-
-<!-- Edit Tax Modal -->
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Edit Note')): ?>
+<!-- Edit Note Modal -->
 <div class="modal fade" id="editNoteModel" tabindex="-1" aria-labelledby="editNoteModelLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -141,7 +146,8 @@ Notes
     </div>
   </div>
 </div>
-
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Delete Note')): ?>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteNotesModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -166,7 +172,7 @@ Notes
     </div>
   </div>
 </div>
-
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>

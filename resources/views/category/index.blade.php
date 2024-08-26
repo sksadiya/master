@@ -20,10 +20,12 @@ Categories
         <div class="listjs-table" id="categoryList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add Categories')
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addCategoryModal"><i class="fas fa-plus-circle me-2"></i> Add Category</button>
               </div>
+              @endcan
             </div>
           </div>
           <div class="table-responsive table-card mt-3 mb-1">
@@ -32,7 +34,9 @@ Categories
                 <tr>
                   <th>Category</th>
                   <th>Product</th>
+                  @if(Auth::user()->can('Edit Categories') || Auth::user()->can('Delete Categories'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -45,7 +49,7 @@ Categories
     </div>
   </div>
 </div>
-
+@can('Add Categories')
 <!-- Add Category Modal -->
 <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -74,7 +78,8 @@ Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can('Edit Categories')
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel"
   aria-hidden="true">
@@ -106,7 +111,8 @@ Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can('Delete Categories')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -131,7 +137,7 @@ Categories
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

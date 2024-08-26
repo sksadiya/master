@@ -21,15 +21,21 @@ Payments
         <div class="listjs-table" id="paymentList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addPaymentModal"><i class="fas fa-plus-circle me-2"></i>Add Payments</button>
               </div>
+              <?php endif; ?>
             </div>
             <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
+                  <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Payments(Pdf)')): ?>
                 <a href="<?php echo e(route('exportPayments')); ?>" type="button" class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Payments(Excel)')): ?>
                 <a href="<?php echo e(route('export-payments')); ?>" type="button" class="btn btn-outline-success btn-border">Excel Export</a>
+                <?php endif; ?>
                 </div>
             </div>
           </div>
@@ -43,7 +49,9 @@ Payments
                   <th>Payment Mode</th>
                   <th>Payment Amount</th>
                   <th>Due Amount</th>
+                  <?php if(Auth::user()->can('Edit Payments') || Auth::user()->can('Delete Payments')): ?>
                   <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -55,7 +63,7 @@ Payments
     </div>
   </div>
 </div>
-
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
 <!-- add Payment Modal -->
 <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -115,7 +123,8 @@ Payments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
 <!-- Edit payment Modal -->
 <div class="modal fade" id="editPaymentModal" tabindex="-1" aria-labelledby="editPaymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -177,7 +186,8 @@ Payments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Delete Payments')): ?>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="confirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -202,7 +212,7 @@ Payments
     </div>
   </div>
 </div>
-
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>

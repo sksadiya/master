@@ -47,11 +47,13 @@
                     </a>
                 </li>
                 @endcan
+                @can('View serviceCategories')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('serviceCategories') }}" >
                     <i class="fas fa-layer-group"></i> <span>Service Categories</span>
                     </a>
                 </li>
+                @endcan
                 @can('View Departments')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('departments') }}" >
@@ -80,56 +82,76 @@
                     </a>
                 </li>
                 @endcan
+                @can('View Invoices')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('invoices') }}" >
                     <i class="fas fa-file-invoice"></i> <span>Invoices</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Payments')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('payments') }}" >
                     <i class="fas fa-dollar-sign"></i> <span>Payments</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Categories')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('categories') }}" >
                     <i class="fas fa-sitemap"></i> <span>Categories</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Taxes')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('taxes') }}" >
                     <i class="fas fa-coins"></i> <span>Taxes</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Products')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('products') }}" >
                     <i class="fas fa-tag"></i> <span>Products</span>
                     </a>
                 </li>
+                @endcan
+                @can('View expenseCategories')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('expenseCategories') }}" >
                     <i class="fas fa-network-wired"></i> <span>Expense Categories</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Expenses')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('expenses') }}" >
                     <i class="fas fa-list"></i> <span>Expenses</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Note')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('notes') }}" >
                     <i class="far fa-sticky-note"></i> <span>Notes</span>
                     </a>
                 </li>
+                @endcan
+                @can('View & Update Settings')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('app-settings') }}" >
                     <i class="fas fa-wrench"></i> <span>Settings</span>
                     </a>
                 </li>
+                @endcan
+                @can('View Roles')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('roles') }}" >
                     <i class="fas fa-key"></i> <span>Roles & Permissions</span>
                     </a>
                 </li>
+                @endcan
             </ul>
         </div>
         <!-- Sidebar -->

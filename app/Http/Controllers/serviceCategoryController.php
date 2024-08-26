@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\serviceCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class serviceCategoryController extends Controller
@@ -55,17 +56,8 @@ class serviceCategoryController extends Controller
                     return [
                         'name' => $category->name,
                         'clients_count' => $category->clients_count,
-                        'action' => '<div class="justify-content-end d-flex gap-2">
-                                    <div class="edit">
-                                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editServiceCategoryModal" data-id="'. $category->id .'"
-                                    data-name="'. $category->name .'"><i class="fas fa-pen"></i> Edit</button>
-                                    </div>
-                                    <div class="remove">
-                                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="fas fa-trash"></i> Delete</button>
-                                    </div>
-                                    </div>'
+                        'action' => $this->generateServiceCategoriesActions($category
+                        )
                     ];
                 })
             ]);
@@ -74,7 +66,24 @@ class serviceCategoryController extends Controller
         }
     }
     
-
+    private function generateServiceCategoriesActions($category)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit serviceCategories')) {
+            $actions .= '<div class="edit">
+                                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editServiceCategoryModal" data-id="'. $category->id .'"
+                                    data-name="'. $category->name .'"><i class="fas fa-pen"></i> Edit</button>
+                                    </div>';
+        }
+        if (Auth::user()->can('Delete serviceCategories')) {
+            $actions .= '<div class="remove">
+                                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="fas fa-trash"></i> Delete</button>
+                                    </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
+    }
     public function store(Request $request)
 {
     $validator = Validator::make($request->all(), [

@@ -101,10 +101,14 @@
                       <div class="row g-4 mb-3">
                         <div class="col-sm">
                             <div class="d-flex justify-content-sm-end">
+                              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Clients invoices(Pdf)')): ?>
                               <a href="<?php echo e(route('exportClientInvoices', $client->id)); ?>" type="button"
                                 class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                              <?php endif; ?>
+                              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Clients invoices(Excel)')): ?>
                               <a href="<?php echo e(route('clients.export-with-invoices', $client->id)); ?>" type="button"
                                 class="btn btn-outline-info btn-border me-2">Excel Export</a>
+                              <?php endif; ?>
                             </div>
                         </div>
                       </div>
@@ -142,10 +146,14 @@
                       <div class="row g-4 mb-3">
                         <div class="col-sm">
                             <div class="d-flex justify-content-sm-end">
+                              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Clients payments(Pdf)')): ?>
                               <a href="<?php echo e(route('exportClientPayments', $client->id)); ?>" type="button"
                                 class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                                <?php endif; ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Clients payments(Excel)')): ?>
                               <a href="<?php echo e(route('clients.export-with-payments', $client->id)); ?>" type="button"
                                 class="btn btn-outline-info btn-border me-2">Excel Export</a>
+                                <?php endif; ?>
                             </div>
                         </div>
                       </div>

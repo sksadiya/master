@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Tax;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 
@@ -58,24 +59,34 @@ class taxController extends Controller
                     'default' => '<div class="form-check form-switch">
                                 <input class="form-check-input default-toggle-input" type="checkbox" role="switch"
                                     id="default-switch-' . $tax->id . '"
-                                    onclick="setDefault(' . $tax->id . ')" ' . ($tax->is_default ? 'checked' : '') . '>
+                                    onclick="setDefault(' . $tax->id . ')" ' . ($tax->is_default ? 'checked' : '') 
+                                    . (!auth()->user()->can('Edit Taxes') ? ' disabled' : '') .  '>
                                 <label class="form-check-label" for="default-switch-' . $tax->id . '"></label>
                             </div>',
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editTaxModal" data-id="'. $tax->id .'" data-name="'. $tax->name .'"
-          data-value="'. $tax->value .'"><i class="fas fa-pen"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteTaxModal" data-id="'. $tax->id .'"><i class="fas fa-trash"></i>
-          Delete</button>
-          </div>
-        </div>'
+                    'action' => $this->generateTaxActions($tax)
                 ];
             })
         ]);
+    }
+
+    private function generateTaxActions($tax)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Taxes')) {
+            $actions .= '<div class="edit">
+          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+          data-bs-target="#editTaxModal" data-id="'. $tax->id .'" data-name="'. $tax->name .'"
+          data-value="'. $tax->value .'"><i class="fas fa-pen"></i> Edit</button>
+          </div>';
+        }
+        if (Auth::user()->can('Delete Taxes')) {
+            $actions .= '<div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#deleteTaxModal" data-id="'. $tax->id .'"><i class="fas fa-trash"></i>
+          Delete</button>
+          </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
     public function store(Request $request)
 {

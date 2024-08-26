@@ -20,20 +20,11 @@ Roles
         <div class="listjs-table" id="rolesList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add Roles')
               <div>
                 <a href="{{ route('role.add') }}" type="button" class="btn btn-primary add-btn"><i class="fas fa-plus-circle me-2"></i> Add Role</a>
               </div>
-            </div>
-            <div class="col-sm">
-              <form method="GET" action="{{ route('roles') }}" id="searchForm">
-                <div class="d-flex justify-content-sm-end">
-                  <div class="search-box ms-2 me-2">
-                    <input type="text" class="form-control search" name="search" id="searchInput" value="{{ request()->get('search') }}" placeholder="Search...">
-                    <i class="ri-search-line search-icon"></i>
-                  </div>
-                  <a href="{{ route('roles') }}" type="button" class="btn bg-primary text-light">Reset</a>
-                </div>
-              </form>
+              @endcan
             </div>
           </div>
 
@@ -42,21 +33,21 @@ Roles
               <thead class="table-light">
                 <tr>
                   <th>Role Name</th>
+                  @if(Auth::user()->can('Edit Roles') || Auth::user()->can('Delete Roles'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
-              
               </tbody>
             </table>
           </div>
-        
         </div>
       </div>
     </div>
   </div>
 </div>
-
+@can('Delete Roles')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="roleDeleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -80,7 +71,7 @@ Roles
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

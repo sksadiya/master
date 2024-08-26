@@ -21,10 +21,12 @@ Expense Categories
         <div class="listjs-table" id="expenseCategoriesList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add expenseCategories')
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addExpenseCategorModal"><i class="fas fa-plus-circle me-2"></i> Add Expense Category</button>
               </div>
+              @endcan
             </div>
           </div>
 
@@ -33,7 +35,9 @@ Expense Categories
               <thead class="table-light">
                 <tr>
                   <th>Expense Category</th>
+                  @if(Auth::user()->can('Edit expenseCategories') || Auth::user()->can('Delete expenseCategories'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -47,6 +51,7 @@ Expense Categories
   </div>
 </div>
 
+@can('Add expenseCategories')
 <!-- Add Category Modal -->
 <div class="modal fade" id="addExpenseCategorModal" tabindex="-1" aria-labelledby="addExpenseCategorModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -75,7 +80,8 @@ Expense Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can('Edit expenseCategories')
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editExpenseCategoryModal" tabindex="-1" aria-labelledby="editExpenseCategoryModalLabel"
   aria-hidden="true">
@@ -107,7 +113,8 @@ Expense Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can('Delete expenseCategories')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -132,7 +139,7 @@ Expense Categories
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

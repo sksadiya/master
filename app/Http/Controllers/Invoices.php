@@ -11,6 +11,7 @@ use App\Models\Tax;
 use App\Rules\GstNumber;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Spatie\LaravelPdf\Facades\Pdf;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -74,21 +75,29 @@ class Invoices extends Controller
                     'total' => $invoice->total,
                     'due' => $invoice->due_amount,
                     'status' =>   $this->getStatusBadge($invoice->invoice_status),
-                    'action' => ' <div class="justify-content-end d-flex gap-2">
-                    <div class="edit">
-                    <a href="' . route('invoice.edit', $invoice->id) . '"
-                    class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
-                    </div>
-                    <div class="remove">
-                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#invoiceDeleteModal" data-id="' . $invoice->id . '"><i class="fas fa-trash"></i>
-                    Delete</button>
-                    </div>
-                    </div>',
+                    'action' => $this->generateInvoicesActions($invoice),
                 ];
             })
         ]);
     }
+    private function generateInvoicesActions($invoice)
+{
+    $actions = '';
+    if (Auth::user()->can('Edit Invoices')) {
+        $actions .= '<div class="edit">
+                    <a href="' . route('invoice.edit', $invoice->id) . '"
+                    class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
+                    </div>';
+    }
+    if (Auth::user()->can('Delete Invoices')) {
+        $actions .= '<div class="remove">
+                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#invoiceDeleteModal" data-id="' . $invoice->id . '"><i class="fas fa-trash"></i>
+                    Delete</button>
+                    </div>';
+    }
+    return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
+}
     public function getStatusBadge($status)
     {
         $badgeClasses = [

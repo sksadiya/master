@@ -47,11 +47,13 @@
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View serviceCategories')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('serviceCategories')); ?>" >
                     <i class="fas fa-layer-group"></i> <span>Service Categories</span>
                     </a>
                 </li>
+                <?php endif; ?>
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Departments')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('departments')); ?>" >
@@ -80,56 +82,76 @@
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Invoices')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('invoices')); ?>" >
                     <i class="fas fa-file-invoice"></i> <span>Invoices</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Payments')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('payments')); ?>" >
                     <i class="fas fa-dollar-sign"></i> <span>Payments</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Categories')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('categories')); ?>" >
                     <i class="fas fa-sitemap"></i> <span>Categories</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Taxes')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('taxes')); ?>" >
                     <i class="fas fa-coins"></i> <span>Taxes</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Products')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('products')); ?>" >
                     <i class="fas fa-tag"></i> <span>Products</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View expenseCategories')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('expenseCategories')); ?>" >
                     <i class="fas fa-network-wired"></i> <span>Expense Categories</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Expenses')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('expenses')); ?>" >
                     <i class="fas fa-list"></i> <span>Expenses</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Note')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('notes')); ?>" >
                     <i class="far fa-sticky-note"></i> <span>Notes</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View & Update Settings')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('app-settings')); ?>" >
                     <i class="fas fa-wrench"></i> <span>Settings</span>
                     </a>
                 </li>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Roles')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('roles')); ?>" >
                     <i class="fas fa-key"></i> <span>Roles & Permissions</span>
                     </a>
                 </li>
+                <?php endif; ?>
             </ul>
         </div>
         <!-- Sidebar -->

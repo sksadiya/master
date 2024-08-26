@@ -21,8 +21,10 @@ Taxes
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
+                @can('Add Taxes')
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addTaxModal"><i class="fas fa-plus-circle me-2"></i> Add Tax</button>
+                  @endcan
               </div>
             </div>
           </div>
@@ -34,7 +36,9 @@ Taxes
                   <th>Tax Name</th>
                   <th>Tax Percentage</th>
                   <th>Default</th>
+                  @if(Auth::user()->can('Edit Taxes') || Auth::user()->can('Delete Taxes'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -46,7 +50,7 @@ Taxes
     </div>
   </div>
 </div>
-
+@can('Add Taxes')
 <!-- Add Tax Modal -->
 <div class="modal fade" id="addTaxModal" tabindex="-1" aria-labelledby="addTaxModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -85,7 +89,8 @@ Taxes
     </div>
   </div>
 </div>
-
+@endcan
+@can('Edit Taxes')
 <!-- Edit Tax Modal -->
 <div class="modal fade" id="editTaxModal" tabindex="-1" aria-labelledby="editTaxModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -126,7 +131,8 @@ Taxes
     </div>
   </div>
 </div>
-
+@endcan
+@can('Delete Taxes')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteTaxModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -151,7 +157,7 @@ Taxes
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 class categoryController extends Controller
@@ -47,20 +48,28 @@ class categoryController extends Controller
                     'products_count' => $category->products_count,
                     'created_at' => $category->created_at->toDateString(),
                     'updated_at' => $category->updated_at->toDateString(),
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-                    <div class="edit">
-                        <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-                        data-bs-target="#editCategoryModal" data-id="' . $category->id . '"
-                        data-name="' . $category->name . '"><i class="fas fa-pen"></i> Edit</button>
-                    </div>
-                    <div class="remove">
-                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                        data-bs-target="#deleteRecordModal" data-id="' . $category->id . '"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                </div>'
+                    'action' => $this->generateCategoryActions($category)
                 ];
             })
         ]);
+    }
+    private function generateCategoryActions($category)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Categories')) {
+            $actions .= '<div class="edit">
+                        <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#editCategoryModal" data-id="' . $category->id . '"
+                        data-name="' . $category->name . '"><i class="fas fa-pen"></i> Edit</button>
+                    </div>';
+        }
+        if (Auth::user()->can('Delete Categories')) {
+            $actions .= '<div class="remove">
+                        <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                        data-bs-target="#deleteRecordModal" data-id="' . $category->id . '"><i class="fas fa-trash"></i> Delete</button>
+                    </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
 
     public function store(Request $request)

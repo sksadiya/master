@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
@@ -53,17 +54,25 @@ class RolesAndPermissions extends Controller
             'data' => $roles->map(function ($role) {
                 return [
                     'name' => $role->name,
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-                          <div class="edit">
-                            <a href="'. route('role.edit',$role->id) .'" class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
-                          </div>
-                          <div class="remove">
-                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#roleDeleteModal" data-id="'. $role->id .'"><i class="fas fa-trash"></i> Delete</button>
-                          </div>
-                        </div>'
+                    'action' => $this->generateRolesActions($role),
                 ];
             })
         ]);
+    }
+    private function generateRolesActions($role)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Roles')) {
+            $actions .= '<div class="edit">
+                            <a href="'. route('role.edit',$role->id) .'" class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
+                          </div>';
+        }
+        if (Auth::user()->can('Delete Roles')) {
+            $actions .= '<div class="remove">
+                            <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal" data-bs-target="#roleDeleteModal" data-id="'. $role->id .'"><i class="fas fa-trash"></i> Delete</button>
+                          </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
 
     public function create()
@@ -90,8 +99,8 @@ class RolesAndPermissions extends Controller
         'categories' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Categories');
         }),
-        'services' => $allPermissions->filter(function ($permission) {
-            return str_contains($permission->name, 'Services');
+        'products' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Products');
         }),
         'roles' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Roles');
@@ -104,6 +113,21 @@ class RolesAndPermissions extends Controller
         }),
         'Tasks Notes' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Task Notes');
+        }),
+        'expenseCategories' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'expenseCategories');
+        }),
+        'serviceCategories' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'serviceCategories');
+        }),
+        'Notes' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Notes');
+        }),
+        'Taxes' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Taxes');
+        }),
+        'Expenses' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Expenses');
         }),
       
     ];
@@ -156,10 +180,12 @@ class RolesAndPermissions extends Controller
             return str_contains($permission->name, 'Payments');
         }),
         'categories' => $allPermissions->filter(function ($permission) {
-            return str_contains($permission->name, 'Categories');
+            return str_contains($permission->name, 'Categories') &&
+           !str_contains($permission->name, 'expenseCategories') &&
+            !str_contains($permission->name, 'serviceCategories');
         }),
-        'services' => $allPermissions->filter(function ($permission) {
-            return str_contains($permission->name, 'Services');
+        'products' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Products');
         }),
         'roles' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Roles');
@@ -172,6 +198,22 @@ class RolesAndPermissions extends Controller
         }),
         'Tasks Notes' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Task Notes');
+        }),
+        'expenseCategories' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'expenseCategories');
+        }),
+        'serviceCategories' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'serviceCategories');
+        }),
+        'Note' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Note') &&
+            !str_contains($permission->name, 'Task Notes');
+        }),
+        'Taxes' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Taxes');
+        }),
+        'Expenses' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'Expenses');
         }),
     ];
         return view('roles.edit', compact('permissions', 'role'));

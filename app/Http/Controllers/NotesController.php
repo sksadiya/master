@@ -55,26 +55,36 @@ class NotesController extends Controller
             'data' => $notes->map(function ($note) {
                 return [
                     'title' => $note->title,
-                   'starred' => '<button type="button" class="btn btn-icon btn-sm material-shadow-none favourite-btn ' . ($note->is_starred ? 'active' : '') . '" data-id="' . $note->id . '">
-    <i class="fas fa-star fs-13 align-bottom"></i>
-</button>',
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-          data-bs-target="#editNoteModel" data-id="' . $note->id . '" data-title="' . $note->title . '"
-          data-content="' . $note->content . '" data-star="' . $note->is_starred . '"><i class="fas fa-pen"></i> Edit</button>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#deleteNoteModal" data-id="' . $note->id . '"><i class="fas fa-trash"></i>
-          Delete</button>
-          </div>
-        </div>'
+                   'starred' => '<button type="button" class="btn btn-icon btn-sm material-shadow-none favourite-btn ' 
+            . ($note->is_starred ? 'active' : '') 
+            . '" data-id="' . $note->id . '" ' 
+            . (!auth()->user()->can('Edit Note') ? 'disabled' : '') . '>
+                <i class="fas fa-star fs-13 align-bottom"></i>
+            </button>',
+                    'action' => $this->generateNotesAction($note),
                 ];
             })
         ]);
     }
-
+    private function generateNotesAction($note)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Note')) {
+            $actions .= '<div class="edit">
+          <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+          data-bs-target="#editNoteModel" data-id="' . $note->id . '" data-title="' . $note->title . '"
+          data-content="' . $note->content . '" data-star="' . $note->is_starred . '"><i class="fas fa-pen"></i> Edit</button>
+          </div>';
+        }
+        if (Auth::user()->can('Delete Note')) {
+            $actions .= '<div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#deleteNoteModal" data-id="' . $note->id . '"><i class="fas fa-trash"></i>
+          Delete</button>
+          </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
+    }
     public function updateStarred(Request $request,$id)
 {
     $note = Note::findOrFail($id);

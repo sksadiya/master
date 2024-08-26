@@ -99,10 +99,14 @@
                       <div class="row g-4 mb-3">
                         <div class="col-sm">
                             <div class="d-flex justify-content-sm-end">
+                              @can('Export Clients invoices(Pdf)')
                               <a href="{{ route('exportClientInvoices', $client->id) }}" type="button"
                                 class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                              @endcan
+                              @can('Export Clients invoices(Excel)')
                               <a href="{{ route('clients.export-with-invoices', $client->id) }}" type="button"
                                 class="btn btn-outline-info btn-border me-2">Excel Export</a>
+                              @endcan
                             </div>
                         </div>
                       </div>
@@ -140,10 +144,14 @@
                       <div class="row g-4 mb-3">
                         <div class="col-sm">
                             <div class="d-flex justify-content-sm-end">
+                              @can('Export Clients payments(Pdf)')
                               <a href="{{ route('exportClientPayments', $client->id) }}" type="button"
                                 class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                                @endcan
+                                @can('Export Clients payments(Excel)')
                               <a href="{{ route('clients.export-with-payments', $client->id) }}" type="button"
                                 class="btn btn-outline-info btn-border me-2">Excel Export</a>
+                                @endcan
                             </div>
                         </div>
                       </div>

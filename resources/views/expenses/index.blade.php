@@ -21,10 +21,12 @@ Expenses
         <div class="listjs-table" id="expensesList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add Expenses')
               <div>
                 <a href="{{ route('expense.add') }}" type="button" class="btn btn-primary add-btn"><i
                     class="fas fa-plus-circle me-2"></i> Add Expense</a>
               </div>
+              @endcan
             </div>
           </div>
 
@@ -37,7 +39,9 @@ Expenses
                   <th>Expense Category</th>
                   <th>Expense Amount</th>
                   <th>Team Member</th>
+                  @if(Auth::user()->can('Edit Expenses') || Auth::user()->can('Delete Expenses'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -52,7 +56,7 @@ Expenses
 </div>
 
 
-
+@can('Delete Expenses')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="confirmationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -77,7 +81,7 @@ Expenses
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

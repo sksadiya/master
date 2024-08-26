@@ -10,8 +10,10 @@
         <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
             <h4 class="mb-sm-0 font-size-18">Invoice <?php echo e($invoice->invoice_number); ?></h4>
             <div class="page-title-right">
+              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
             <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
-            data-bs-target="#addPaymentModal"><i class="bx bx-plus-circle me-2"></i>Add Payments</button>
+            data-bs-target="#addPaymentModal"><i class="fas fa-plus-circle me-2"></i>Add Payments</button>
+            <?php endif; ?>
             </div>
         </div>
     </div>
@@ -33,7 +35,7 @@
               <small><?php echo e(\Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y')); ?></small></strong>
           </div>
           <div class="text-center">
-            <img src="<?php echo e(URL::asset('images/uploads/' . $settings['app-logo'])); ?>" class="img-fluid" alt="Logo"
+            <img src="<?php echo e(URL::asset('public/images/uploads/' . $settings['app-logo'])); ?>" class="img-fluid" alt="Logo"
               style="max-width: 200px;">
           </div>
         </div>
@@ -141,7 +143,9 @@
           <div class="row">
             <div class="col-12 text-end">
               <a href="#" onclick="window.print()" class="btn btn-primary">Print</a>
+              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Download Invoices')): ?>
               <a href="<?php echo e(route('generate',$invoice->id )); ?>"  class="btn btn-primary">Download</a>
+              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -150,7 +154,7 @@
   </div>
 </section>
 
-
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
 <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -203,6 +207,7 @@
     </div>
   </div>
 </div>
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>

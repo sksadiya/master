@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -59,19 +60,27 @@ class ProductController extends Controller
                     'name' => $product->name,
                     'category' => $product->category->name,
                     'price' => $product->unit_price,
-                    'action' =>'<div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="'. route('product.edit',$product->id) .'" class="btn btn-sm btn-success edit-item-btn" ><i class="fas fa-pen"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#productDeleteModal" data-id="'. $product->id .'"><i class="fas fa-trash"></i>
-          Delete</button>
-          </div>
-        </div>',
+                    'action' =>$this->generateProductActions($product)
                 ];
             })
         ]);
+    }
+    private function generateProductActions($product)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Products')) {
+            $actions .= '<div class="edit">
+          <a href="'. route('product.edit',$product->id) .'" class="btn btn-sm btn-success edit-item-btn" ><i class="fas fa-pen"></i> Edit</a>
+          </div>';
+        }
+        if (Auth::user()->can('Delete Products')) {
+            $actions .= '<div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#productDeleteModal" data-id="'. $product->id .'"><i class="fas fa-trash"></i>
+          Delete</button>
+          </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
     public function create()
     {

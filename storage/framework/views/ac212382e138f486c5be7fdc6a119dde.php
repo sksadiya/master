@@ -20,9 +20,11 @@ products
         <div class="listjs-table" id="productsList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Products')): ?>
               <div>
                 <a href="<?php echo e(route('product.add')); ?>" type="button" class="btn btn-primary add-btn" ><i class="fas fa-plus-circle me-2"></i> Add Product</a>
               </div>
+              <?php endif; ?>
             </div>
           </div>
 
@@ -33,7 +35,9 @@ products
                   <th>product Name</th>
                   <th>Product Category</th>
                   <th>Price</th>
+                  <?php if(Auth::user()->can('Edit Products') || Auth::user()->can('Delete Products')): ?>
                   <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -46,7 +50,7 @@ products
     </div>
   </div>
 </div>
-
+<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Delete Products')): ?>
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="productDeleteModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -71,7 +75,7 @@ products
     </div>
   </div>
 </div>
-
+<?php endif; ?>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('script'); ?>

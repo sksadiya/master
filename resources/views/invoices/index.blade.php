@@ -22,17 +22,25 @@ Invoices
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
+                @can('Add Invoices')
                 <a href="{{ route('invoice.add') }}" type="button" class="btn btn-primary add-btn"><i
                     class="fas fa-plus-circle me-2"></i>Add Invoice</a>
+                @endcan
+                @can('Add Payments')
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addPaymentModal"><i class="fas fa-plus-circle me-2"></i>Add Payments</button>
+                  @endcan
               </div>
             </div>
             <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
+                  @can('Export Invoices(Pdf)')
                 <a href="{{ route('exportInvoices') }}" type="button" class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                @endcan
+                @can('Export Invoices(Excel)')
                 <a href="{{ route('export-invoices') }}" type="button" class="btn btn-outline-success btn-border">Excel Export</a>
                 </div>
+                @endcan
             </div>
           </div>
 
@@ -45,7 +53,9 @@ Invoices
                   <th>Total Amount</th>
                   <th>Due Amount</th>
                   <th>Status</th>
+                  @if(Auth::user()->can('Edit Invoices') || Auth::user()->can('Delete Invoices'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">

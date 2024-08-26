@@ -22,17 +22,25 @@ Invoices
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
               <div>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Invoices')): ?>
                 <a href="<?php echo e(route('invoice.add')); ?>" type="button" class="btn btn-primary add-btn"><i
                     class="fas fa-plus-circle me-2"></i>Add Invoice</a>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Add Payments')): ?>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addPaymentModal"><i class="fas fa-plus-circle me-2"></i>Add Payments</button>
+                  <?php endif; ?>
               </div>
             </div>
             <div class="col-sm">
                 <div class="d-flex justify-content-sm-end">
+                  <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Invoices(Pdf)')): ?>
                 <a href="<?php echo e(route('exportInvoices')); ?>" type="button" class="btn btn-outline-success btn-border me-2">PDF Export</a>
+                <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('Export Invoices(Excel)')): ?>
                 <a href="<?php echo e(route('export-invoices')); ?>" type="button" class="btn btn-outline-success btn-border">Excel Export</a>
                 </div>
+                <?php endif; ?>
             </div>
           </div>
 
@@ -45,7 +53,9 @@ Invoices
                   <th>Total Amount</th>
                   <th>Due Amount</th>
                   <th>Status</th>
+                  <?php if(Auth::user()->can('Edit Invoices') || Auth::user()->can('Delete Invoices')): ?>
                   <th>Action</th>
+                  <?php endif; ?>
                 </tr>
               </thead>
               <tbody class="list form-check-all">

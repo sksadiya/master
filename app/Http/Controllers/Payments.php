@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Spatie\LaravelPdf\Facades\Pdf;
@@ -67,21 +68,29 @@ class Payments extends Controller
                     'payment_mode' => $payment->payment_mode,
                     'amount' => $payment->amount,
                     'due_payment' => $payment->due_payment,
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-                    <div class="edit">
-                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#editPaymentModal" data-id="'. $payment->id .'" data-invoice="'. $payment->invoice_id .'"
-                    data-payment-method="'. $payment->payment_mode .'" data-payment-note="'. $payment->notes .'" data-payment-date="'. $payment->payment_date.'" data-payment-amount="'. $payment->amount.'"><i class="fas fa-pen"></i> Edit</button>
-                    </div>
-                    <div class="remove">
-                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#confirmationModal" data-id="'. $payment->id .'"><i class="fas fa-trash"></i>
-                    Delete</button>
-                    </div>
-                    </div>'
+                    'action' => $this->generatePaymentsActions($payment)
                 ];
             })
         ]);
+    }
+    private function generatePaymentsActions($payment)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Payments')) {
+            $actions .= '<div class="edit">
+                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#editPaymentModal" data-id="'. $payment->id .'" data-invoice="'. $payment->invoice_id .'"
+                    data-payment-method="'. $payment->payment_mode .'" data-payment-note="'. $payment->notes .'" data-payment-date="'. $payment->payment_date.'" data-payment-amount="'. $payment->amount.'"><i class="fas fa-pen"></i> Edit</button>
+                    </div>';
+        }
+        if (Auth::user()->can('Delete Payments')) {
+            $actions .= '<div class="remove">
+                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#confirmationModal" data-id="'. $payment->id .'"><i class="fas fa-trash"></i>
+                    Delete</button>
+                    </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
     
     public function store(Request $request)

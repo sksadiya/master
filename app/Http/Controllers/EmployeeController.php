@@ -69,12 +69,12 @@ class EmployeeController extends Controller
             'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
             'data' => $employees->map(function ($employee) {
                 return [
-                    'name' => auth()->user()->can('Show Employees')
-                    ? '<a href="'. route('employee.show', $employee->id) .'">'. $employee->user->name .'</a>'
-                    : $employee->user->name,
-                    'department' => $employee->department->name,
-                    'email' => $employee->user->email,
-                    'contact' => $employee->user->contact,
+                  'name' => auth()->user()->can('Show Employees')
+                    ? '<a href="'. route('employee.show', $employee->id) .'">'. ($employee->user ? $employee->user->name : 'No Name') .'</a>'
+                    : ($employee->user ? $employee->user->name : 'No Name'),
+                    'department' => $employee->department ? $employee->department->name : 'No Name',
+                    'email' => $employee->user ? $employee->user->email : 'No Name',
+                    'contact' => $employee->user ? $employee->user->contact : 'No Name',
                     'action' =>$this->generateEmployeeActions($employee),
                 ];
             })

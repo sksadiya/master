@@ -20,10 +20,12 @@ Service Categories
         <div class="listjs-table" id="serviceCategoryList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Add serviceCategories')
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addServiceCategoryModal"><i class="fas fa-plus-circle me-2"></i> Add Service Category</button>
               </div>
+              @endcan
             </div>
           </div>
 
@@ -33,7 +35,9 @@ Service Categories
                 <tr>
                   <th>Category</th>
                   <th>Clients</th>
+                  @if(Auth::user()->can('Edit serviceCategories') || Auth::user()->can('Delete serviceCategories'))
                   <th>Action</th>
+                  @endif
                 </tr>
               </thead>
               <tbody class="list form-check-all">
@@ -46,7 +50,7 @@ Service Categories
     </div>
   </div>
 </div>
-
+@can( 'Add serviceCategories')
 <!-- Add Category Modal -->
 <div class="modal fade" id="addServiceCategoryModal" tabindex="-1" aria-labelledby="addServiceCategoryModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -75,7 +79,8 @@ Service Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can( 'Edit serviceCategories')
 <!-- Edit Category Modal -->
 <div class="modal fade" id="editServiceCategoryModal" tabindex="-1" aria-labelledby="editServiceCategoryModalLabel"
   aria-hidden="true">
@@ -107,7 +112,8 @@ Service Categories
     </div>
   </div>
 </div>
-
+@endcan
+@can( 'Delete serviceCategories')
 <!-- Delete Confirmation Modal -->
 <div class="modal fade zoomIn" id="deleteRecordModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -132,7 +138,7 @@ Service Categories
     </div>
   </div>
 </div>
-
+@endcan
 @endsection
 
 @section('script')

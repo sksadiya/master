@@ -6,6 +6,7 @@ use App\Models\Expense;
 use App\Models\expense_category;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +19,15 @@ class ExpenseController extends Controller
     }
     public function getExpenses(Request $request)
     {
+        $user = Auth::user();
         $query = Expense::with(['category', 'member'])->latest();
+        if (!$user->hasRole('Super Admin')) {
+            $query->where(function ($query) use ($user) {
+                $query->WhereHas('member', function ($query) use ($user) {
+                        $query->where('team_member_id', $user->id);
+                    });
+            });
+        }
         // Filtering
         if ($request->has('search') && !empty($request->get('search')['value'])) {
             $searchValue = $request->get('search')['value'];
@@ -64,25 +73,35 @@ class ExpenseController extends Controller
             'recordsFiltered' => $totalRecords, // Assuming no additional filtering beyond search
             'data' => $expenses->map(function ($expense) {
                 return [
-                    'title' => '<a href="'. route('expense.show',$expense->id).'">'.$expense->title.'</a>',
+                    'title' => auth()->user()->can('Show Expenses')
+                    ? '<a href="'. route('expense.show', $expense->id) .'">'. $expense->title .'</a>'
+                    : $expense->title,
                     'date' =>  \Carbon\Carbon::parse($expense->date)->format('d/m/Y') ,
                     'category' => $expense->category->name,
                     'amount' => $expense->amount,
                     'member' => $expense->member->name,
-                    'action' =>'<div class="justify-content-end d-flex gap-2">
-          <div class="edit">
-          <a href="'. route('expense.edit', $expense->id).'"
-          class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
-          </div>
-          <div class="remove">
-          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-          data-bs-target="#confirmationModal" data-id="'. $expense->id .'"><i class="fas fa-trash"></i>
-          Delete</button>
-          </div>
-        </div>',
+                    'action' =>$this->generateExpensesActions($expense),
                 ];
             })
         ]);
+    }
+    private function generateExpensesActions($expense)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit Expenses')) {
+            $actions .= '<div class="edit">
+          <a href="'. route('expense.edit', $expense->id).'"
+          class="btn btn-sm btn-success edit-item-btn"><i class="fas fa-pen"></i> Edit</a>
+          </div>';
+        }
+        if (Auth::user()->can('Delete Expenses')) {
+            $actions .= '<div class="remove">
+          <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+          data-bs-target="#confirmationModal" data-id="'. $expense->id .'"><i class="fas fa-trash"></i>
+          Delete</button>
+          </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
     public function create()
     {
@@ -131,10 +150,17 @@ class ExpenseController extends Controller
     }
     public function edit($id)
     {
+        $user = Auth::user();
         $expense = Expense::find($id);
         if (empty($expense)) {
             Session::flash('error', 'No Expense found!');
             return redirect()->route('expenses');
+        }
+        if (!$user->hasRole('Super Admin')) {
+            // Check if the expense is assigned to the logged-in user
+            if ($user->id !== $expense->member->id) {
+                abort(403, 'User does not have the right permissions.');
+            }
         }
         $categories = expense_category::all();
         $members = User::all();
@@ -142,11 +168,19 @@ class ExpenseController extends Controller
     }
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
         $expense = Expense::find($id);
         if (empty($expense)) {
             Session::flash('error', 'No Expense found!');
             return redirect()->route('expenses');
         }
+        if (!$user->hasRole('Super Admin')) {
+            // Check if the expense is assigned to the logged-in user
+            if ($user->id !== $expense->member->id) {
+                abort(403, 'User does not have the right permissions.');
+            }
+        }
+        
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'category' => 'required|exists:expense_categories,id',
@@ -203,11 +237,18 @@ class ExpenseController extends Controller
     }
     public function destroy($id) {
         $expense = Expense::find($id);
-        
+        $user = Auth::user();
         if (empty($expense)) {
             Session::flash('error', 'No Expense found!');
             return redirect()->route('expenses');
         }
+        if (!$user->hasRole('Super Admin')) {
+            // Check if the expense is assigned to the logged-in user
+            if ($user->id !== $expense->member->id) {
+                abort(403, 'User does not have the right permissions.');
+            }
+        }
+        
         $success = false;
         $fileBasePath = public_path('images/uploads/documents/');
         if ($expense->bill_file) {
@@ -229,9 +270,16 @@ class ExpenseController extends Controller
     public function show($id, Request $request)
     {
         $expense = Expense::find($id);
+        $user = Auth::user();
         if (empty($expense)) {
-            Session::flash('error', 'No Client Found!');
-            return redirect()->back();
+            Session::flash('error', 'No Expense found!');
+            return redirect()->route('expenses');
+        }
+        if (!$user->hasRole('Super Admin')) {
+            // Check if the expense is assigned to the logged-in user
+            if ($user->id !== $expense->member->id) {
+                abort(403, 'User does not have the right permissions.');
+            }
         }
         return view('expenses.show', compact('expense'));
     }

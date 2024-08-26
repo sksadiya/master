@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\expense_category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class expenseCategoryController extends Controller
@@ -42,20 +43,28 @@ class expenseCategoryController extends Controller
             'data' => $categories->map(function ($category) {
                 return [
                     'name' => $category->name,
-                    'action' => '<div class="justify-content-end d-flex gap-2">
-                    <div class="edit">
-                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#editExpenseCategoryModal" data-id="'. $category->id .'"
-                    data-name="'. $category->name .'"><i class="fas fa-pen"></i> Edit</button>
-                    </div>
-                    <div class="remove">
-                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
-                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-                    </div>'
+                    'action' => $this->generateExpenseCategoriesActions($category)
                 ];
             })
         ]);
+    }
+    private function generateExpenseCategoriesActions($category)
+    {
+        $actions = '';
+        if (Auth::user()->can('Edit expenseCategories')) {
+            $actions .= '<div class="edit">
+                    <button type="button" class="btn btn-sm btn-success edit-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#editExpenseCategoryModal" data-id="'. $category->id .'"
+                    data-name="'. $category->name .'"><i class="fas fa-pen"></i> Edit</button>
+                    </div>';
+        }
+        if (Auth::user()->can('Delete expenseCategories')) {
+            $actions .= '<div class="remove">
+                    <button type="button" class="btn btn-sm btn-danger remove-item-btn" data-bs-toggle="modal"
+                    data-bs-target="#deleteRecordModal" data-id="'. $category->id .'"><i class="fas fa-trash"></i> Delete</button>
+                    </div>';
+        }
+        return $actions ? '<div class="justify-content-end d-flex gap-2">' . $actions . '</div>' : '';
     }
 
     public function store(Request $request)
