@@ -54,6 +54,10 @@ Task Details
                                 </td>
                             </tr>
                             <tr>
+                                <td class="fw-medium">Assigned by</td>
+                                <td><?php echo e($task->assigner->name); ?></td>
+                            </tr>
+                            <tr>
                                 <td class="fw-medium">Due Date</td>
                                 <td><?php echo e(\Carbon\Carbon::parse($task->due_date)->format('d M, Y')); ?></td>
                             </tr>

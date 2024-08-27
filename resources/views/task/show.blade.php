@@ -55,6 +55,10 @@ Task Details
                                 </td>
                             </tr>
                             <tr>
+                                <td class="fw-medium">Assigned by</td>
+                                <td>{{ $task->assigner->name }}</td>
+                            </tr>
+                            <tr>
                                 <td class="fw-medium">Due Date</td>
                                 <td>{{ \Carbon\Carbon::parse($task->due_date)->format('d M, Y') }}</td>
                             </tr>

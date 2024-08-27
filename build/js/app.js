@@ -974,45 +974,45 @@ File: Main Js File
 
 	// notification cart dropdown
 	function initTopbarComponents() {
-		if (document.getElementsByClassName("dropdown-item-cart")) {
-			var dropdownItemCart = document.querySelectorAll(".dropdown-item-cart").length;
-			Array.from(document.querySelectorAll("#page-topbar .dropdown-menu-cart .remove-item-btn")).forEach(function (item) {
-				item.addEventListener("click", function (e) {
-					dropdownItemCart--;
-					this.closest(".dropdown-item-cart").remove();
-					Array.from(document.getElementsByClassName("cartitem-badge")).forEach(function (e) {
-						e.innerHTML = dropdownItemCart;
-					});
-					updateCartPrice();
-					if (document.getElementById("empty-cart")) {
-						document.getElementById("empty-cart").style.display = dropdownItemCart == 0 ? "block" : "none";
-					}
-					if (document.getElementById("checkout-elem")) {
-						document.getElementById("checkout-elem").style.display = dropdownItemCart == 0 ? "none" : "block";
-					}
-				});
-			});
-			Array.from(document.getElementsByClassName("cartitem-badge")).forEach(function (e) {
-				e.innerHTML = dropdownItemCart;
-			});
-			if (document.getElementById("empty-cart")) {
-				document.getElementById("empty-cart").style.display = "none";
-			}
-			if (document.getElementById("checkout-elem")) {
-				document.getElementById("checkout-elem").style.display = "block";
-			}
-			function updateCartPrice() {
-				var currencySign = "$";
-				var subtotal = 0;
-				Array.from(document.getElementsByClassName("cart-item-price")).forEach(function (e) {
-					subtotal += parseFloat(e.innerHTML);
-				});
-				if (document.getElementById("cart-item-total")) {
-					document.getElementById("cart-item-total").innerHTML = currencySign + subtotal.toFixed(2);
-				}
-			}
-			updateCartPrice();
-		}
+		// if (document.getElementsByClassName("dropdown-item-cart")) {
+		// 	var dropdownItemCart = document.querySelectorAll(".dropdown-item-cart").length;
+		// 	Array.from(document.querySelectorAll("#page-topbar .dropdown-menu-cart .remove-item-btn")).forEach(function (item) {
+		// 		item.addEventListener("click", function (e) {
+		// 			dropdownItemCart--;
+		// 			this.closest(".dropdown-item-cart").remove();
+		// 			Array.from(document.getElementsByClassName("cartitem-badge")).forEach(function (e) {
+		// 				e.innerHTML = dropdownItemCart;
+		// 			});
+		// 			updateCartPrice();
+		// 			if (document.getElementById("empty-cart")) {
+		// 				document.getElementById("empty-cart").style.display = dropdownItemCart == 0 ? "block" : "none";
+		// 			}
+		// 			if (document.getElementById("checkout-elem")) {
+		// 				document.getElementById("checkout-elem").style.display = dropdownItemCart == 0 ? "none" : "block";
+		// 			}
+		// 		});
+		// 	});
+		// 	Array.from(document.getElementsByClassName("cartitem-badge")).forEach(function (e) {
+		// 		e.innerHTML = dropdownItemCart;
+		// 	});
+		// 	if (document.getElementById("empty-cart")) {
+		// 		document.getElementById("empty-cart").style.display = "none";
+		// 	}
+		// 	if (document.getElementById("checkout-elem")) {
+		// 		document.getElementById("checkout-elem").style.display = "block";
+		// 	}
+		// 	function updateCartPrice() {
+		// 		var currencySign = "$";
+		// 		var subtotal = 0;
+		// 		Array.from(document.getElementsByClassName("cart-item-price")).forEach(function (e) {
+		// 			subtotal += parseFloat(e.innerHTML);
+		// 		});
+		// 		if (document.getElementById("cart-item-total")) {
+		// 			document.getElementById("cart-item-total").innerHTML = currencySign + subtotal.toFixed(2);
+		// 		}
+		// 	}
+		// 	updateCartPrice();
+		// }
 
 		// notification messages
 		if (document.getElementsByClassName("notification-check")) {

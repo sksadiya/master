@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Task_Note;
 use App\Models\User;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -127,6 +128,11 @@ class taskController extends Controller
         $task->save();
 
         $task->assignees()->sync($request->assign_to);
+         // Notify assigned users
+    foreach ($request->assign_to as $userId) {
+        $user = User::find($userId);
+        $user->notify(new TaskAssignedNotification($task));
+    }
         $success = true;
         if ($success == true) {
             return redirect()->route('tasks')->with('success', 'Task Created Successfully.');

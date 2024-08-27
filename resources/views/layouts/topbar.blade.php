@@ -34,12 +34,67 @@
                 </button>
             </div>
 
-            @php
-                $notesCount = Auth::user()->notes()->count();
-                $allNotes = Auth::user()->notes()->get();
-                $starredNotes = Auth::user()->notes()->where('is_starred', true)->get();
-            @endphp
+
+          
+           
             <div class="d-flex align-items-center">
+                  <!-- notifications -->
+            @php
+                $notifyCount = Auth::user()->notifications()->count();
+                $notifications = Auth::user()->notifications;
+                $unreadNotifications = Auth::user()->unreadNotifications;
+            @endphp
+                <div class="dropdown topbar-head-dropdown ms-1 header-item">
+                    <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-cart-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
+                        <i class='fas fa-bell'></i>
+                        <span class="position-absolute topbar-badge cartitem-badge fs-10 translate-middle badge rounded-pill bg-info">5</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0 dropdown-menu-cart" aria-labelledby="page-header-cart-dropdown">
+                        <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h6 class="m-0 fs-16 fw-semibold">Notifications</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-simplebar style="max-height: 300px;">
+                            <div class="p-2">
+                                <div class="text-center empty-cart {{ ($notifyCount == 0) ?'d-block':'d-none'}}" id="empty-cart">
+                                    <div class="avatar-md mx-auto my-3">
+                                        <div class="avatar-title bg-transparent text-info fs-36">
+                                        <img src="{{ URL::asset('build/images/svg/bell.svg')}}" class="img-fluid" alt="user-pic">
+                                        </div>
+                                    </div>
+                                    <h5 class="mb-3">Hey! You have no any notifications</h5>
+                                    <a href="#" class="btn btn-success w-md mb-3">Shop Now</a>
+                                </div>
+                                @foreach ($notifications as $notification)
+                                <div class="d-block dropdown-item dropdown-item-cart text-wrap px-3 py-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-bell me-3 rounded-circle bg-info-subtle p-3"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mt-0 mb-1 fs-14">
+                                                <a href="{{ route('task.show' ,$notification->data['task_id']) }}" class="text-reset"> {{ $notification->data['message'] }}</a>
+                                            </h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <!-- <div class="p-3 border-bottom-0 border-start-0 border-end-0 border-dashed border" id="checkout-elem">
+                            <a href="apps-ecommerce-checkout" class="btn btn-success text-center w-100">
+                                View All Notifications
+                            </a>
+                        </div> -->
+                    </div>
+                </div>
+            @php
+            $notesCount = Auth::user()->notes()->count();
+            $unreadNotifications = Auth::user()->unreadNotifications;
+            $allNotes = Auth::user()->notes()->get();
+            $starredNotes = Auth::user()->notes()->where('is_starred', true)->get();
+            @endphp
                 <div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
                         id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
