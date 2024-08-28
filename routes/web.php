@@ -27,6 +27,8 @@ Route::group(['middleware' => ['auth','check.user.role']], function () {
   Route::get('settings', [App\Http\Controllers\HomeController::class, 'settings'])->name('settings');
   Route::get('/employee', [App\Http\Controllers\EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
 // Route::get('index/{locale}', [App\Http\Controllers\HomeController::class, 'lang']);
+Route::post('/notifications/delete', [App\Http\Controllers\notificationController::class, 'delete'])->name('notifications.delete');
+Route::get('/notifications/{id}/read', [App\Http\Controllers\notificationController::class, 'markAsRead'])->name('notifications.read');
 
 Route::group(['middleware' => ['permission:View & Update Settings']], function () {
 Route::post('/save-settings', [App\Http\Controllers\SettingsController::class, 'updateSettings'])->name('updateSettings');

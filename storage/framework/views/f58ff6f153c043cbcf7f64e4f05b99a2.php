@@ -34,8 +34,6 @@
                 </button>
             </div>
 
-
-          
            
             <div class="d-flex align-items-center">
                   <!-- notifications -->
@@ -47,7 +45,7 @@
                 <div class="dropdown topbar-head-dropdown ms-1 header-item">
                     <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-cart-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
                         <i class='fas fa-bell'></i>
-                        <span class="position-absolute topbar-badge cartitem-badge fs-10 translate-middle badge rounded-pill bg-info">5</span>
+                        <span class="position-absolute topbar-badge cartitem-badge fs-10 translate-middle badge rounded-pill bg-info"><?php echo e($notifyCount); ?></span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-xl dropdown-menu-end p-0 dropdown-menu-cart" aria-labelledby="page-header-cart-dropdown">
                         <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
@@ -66,27 +64,32 @@
                                         </div>
                                     </div>
                                     <h5 class="mb-3">Hey! You have no any notifications</h5>
-                                    <a href="#" class="btn btn-success w-md mb-3">Shop Now</a>
                                 </div>
                                 <?php $__currentLoopData = $notifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="d-block dropdown-item dropdown-item-cart text-wrap px-3 py-2">
                                     <div class="d-flex align-items-center">
                                         <i class="fas fa-bell me-3 rounded-circle bg-info-subtle p-3"></i>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mt-0 mb-1 fs-14">
-                                                <a href="<?php echo e(route('task.show' ,$notification->data['task_id'])); ?>" class="text-reset"> <?php echo e($notification->data['message']); ?></a>
+                                        <div class="flex-grow-1 me-1">
+                                            <h6 class="mt-0 mb-1 fs-14 <?php echo e(is_null($notification->read_at) ? 'fw-bold' : ''); ?>">
+                                                <a href="<?php echo e(route('notifications.read',$notification->id)); ?>" class="text-reset"> 
+                                                <?php echo e($notification->data['message']); ?>
+
+                                            </a>
                                             </h6>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                        <input type="checkbox" class="form-check-input notification-checkbox" data-id="<?php echo e($notification->id); ?>">
                                         </div>
                                     </div>
                                 </div>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                        <!-- <div class="p-3 border-bottom-0 border-start-0 border-end-0 border-dashed border" id="checkout-elem">
-                            <a href="apps-ecommerce-checkout" class="btn btn-success text-center w-100">
-                                View All Notifications
-                            </a>
-                        </div> -->
+                        <div class="p-3 border-bottom-0 border-start-0 border-end-0 border-dashed border " id="checkout-elem">
+                            <button class="btn btn-danger text-center w-100 <?php echo e(($notifyCount == 0) ?'d-none':'d-block'); ?>" id="remove-notifications-btn" disabled>
+                                Remove Notifications
+                            </button>
+                        </div>
                     </div>
                 </div>
             <?php

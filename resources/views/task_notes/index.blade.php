@@ -20,10 +20,12 @@ Task Notes
         <div class="listjs-table" id="taxesList">
           <div class="row g-4 mb-3">
             <div class="col-sm-auto">
+              @can('Create Task Notes')
               <div>
                 <button type="button" class="btn btn-primary add-btn" data-bs-toggle="modal" id="create-btn"
                   data-bs-target="#addTaskNotesModal"><i class="fas fa-plus-circle me-2"></i> Add Notes</button>
               </div>
+              @endcan
             </div>
           </div>
 

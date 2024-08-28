@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\expense_category;
 use App\Models\User;
+use App\Notifications\ExpenseAddedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
@@ -139,6 +141,8 @@ class ExpenseController extends Controller
             $expense->bill_file = $billName;
         }
         $expense->save();
+        $superAdmins = User::role('Super Admin')->get(); // Assuming you are using Spatie's Laravel Permission package
+    Notification::send($superAdmins, new ExpenseAddedNotification($expense));
         $success = true;
         if ($success) {
             return redirect()->route('expenses')

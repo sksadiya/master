@@ -38,10 +38,11 @@ class TaskAssignedNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
+            'type' => 'Task',
             'task_id' => $this->task->id,
             'title' => $this->task->title,
             'assigned_by' => $this->task->assigned_by,
-            'message' => 'You have been assigned a new task: ' . $this->task->title,
+            'message' => 'You have been assigned a new task: ' . $this->task->title ,
             'url' => route('task.show', $this->task->id),
         ];
     }
