@@ -163,6 +163,7 @@ unset($__errorArgs, $__bag); ?>" id="website"
               <div class="mb-3">
                 <label for="service_categories" class="form-label">Service Categories</label>
                 <select class="form-control select2" id="service_categories" name="service_categories[]" multiple="multiple">
+                <option value="">Select Services</option>
                   <?php $__currentLoopData = $serviceCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option <?php echo e(in_array($category->id, $selectedCategories) ? 'selected' : ''); ?>  value="<?php echo e($category->id); ?>"><?php echo e($category->name); ?></option>
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -174,6 +175,7 @@ unset($__errorArgs, $__bag); ?>" id="website"
                 <label for="country" class="form-label">Country</label>
                 <div class="mb-3">
                   <select class="form-control" name="country" id="country-name">
+                    <option value="">Select Country</option>
                     <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <option <?php echo e(($client->country_id == $country->id) ? 'selected':''); ?> value="<?php echo e($country->id); ?>"><?php echo e($country->name); ?></option>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -186,6 +188,7 @@ unset($__errorArgs, $__bag); ?>" id="website"
                 <label for="state-code" class="form-label">State</label>
                 <div class="mb-3">
                   <select class="form-control" name="state" id="state-code">
+                  <option value="">Select State</option>
                   </select>
                 </div>
               </div>
@@ -195,6 +198,7 @@ unset($__errorArgs, $__bag); ?>" id="website"
                 <label for="city" class="form-label">City</label>
                 <div class="mb-3">
                   <select class="form-control" name="city" id="city">
+                  <option value="">Select City</option>
                   </select>
                 </div>
               </div>
@@ -348,78 +352,54 @@ unset($__errorArgs, $__bag); ?>
     $('#service_categories').select2();
 
     $('#country-name').change(function () {
-      fetchStates($(this).val());
-    });
+            var countryId = $(this).val();
+            console.log('Selected Country ID:', countryId); // Debugging statement
+            $('#state-code').empty().append('<option value="">Select State</option>');
+            $('#city').empty().append('<option value="">Select City</option>');
 
-    $('#state-code').change(function () {
-      fetchCities($(this).val());
-    });
+            if (countryId) {
+                $.ajax({
+                    url: '<?php echo e(route('fetch.states', ':id')); ?>'.replace(':id', countryId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('States Data:', data); // Debugging statement
+                        $('#state-code').empty().append('<option value="">Select State</option>');
+                        $.each(data.states, function (key, state) {
+                            $('#state-code').append('<option value="' + key + '">' + state + '</option>');
+                        });
+                        $('#state-code').val('<?php echo e($client->state_id); ?>').change();
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
 
-    function fetchStates(countryId) {
-      const fetchRoute = "<?php echo e(route('fetch.states', ':countryId')); ?>".replace(":countryId", countryId);
-      $.ajax({
-        url: fetchRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          $('#state-code').empty();
-          response.states.forEach(state => {
-            $('#state-code').append(new Option(state.name, state.id, state.id == "<?php echo e($client->state_id); ?>", state.id == "<?php echo e($client->state_id); ?>"));
+        $('#state-code').change(function () {
+            var stateId = $(this).val();
+            console.log('Selected State ID:', stateId); // Debugging statement
+            $('#city').empty().append('<option value="">Select City</option>');
 
-          });
-          $('#state-code').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function fetchCities(stateId) {
-      const fetchCitiesRoute = "<?php echo e(route('fetch.cities', ':stateId')); ?>".replace(':stateId', stateId);
-      $.ajax({
-        url: fetchCitiesRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          console.log('Cities fetched:', response.cities);
-          $('#city').empty();
-          response.cities.forEach(city => {
-            $('#city').append(new Option(city.name, city.id , city.id == "<?php echo e($client->city_id); ?>", city.id == "<?php echo e($client->city_id); ?>"));
-          });
-          $('#city').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function initializeSelect2() {
-      var initialCountryId = $('#country-name').val();
-      var initialStateId = $('#state-code').val();
-      var initialCityId = $('#city').val();
-
-      if (initialCountryId) {
-        fetchStates(initialCountryId);
-      }
-
-      // Ensure cities are fetched only after states are loaded
-      $('#state-code').one('change', function() {
-        if (initialStateId) {
-          fetchCities(initialStateId);
-        }
-        if (initialCityId) {
-          $('#city').val(initialCityId).trigger('change');
-        }
-      });
-
-      if (initialStateId) {
-        $('#state-code').val(initialStateId).trigger('change');
-      }
-    }
-
-    initializeSelect2();
+            if (stateId) {
+                $.ajax({
+                    url: '<?php echo e(route('fetch.cities', ':id')); ?>'.replace(':id', stateId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('Cities Data:', data); // Debugging statement
+                        $('#city').empty().append('<option value="">Select City</option>');
+                        $.each(data.cities, function (key, city) {
+                            $('#city').append('<option value="' + key + '">' + city + '</option>');
+                        });
+                        $('#city').val('<?php echo e($client->city_id); ?>');
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
+        $('#country-name').val('<?php echo e($client->country_id); ?>').change();
   });
 </script>
 <?php $__env->stopSection(); ?>

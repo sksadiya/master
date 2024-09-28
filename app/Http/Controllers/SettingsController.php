@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\State;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Validator;
 use App\Rules\GstNumber;
@@ -17,25 +18,37 @@ class SettingsController extends Controller
     public function index() {
         $countries = Country::all();
         $settings = Setting::all()->pluck('value', 'key')->toArray();
-        return view('settings.index',compact('countries','settings'));
+        $countryId = $settings['country-name'] ?? null;
+        $states = State::where('country_id', $countryId)->get();
+        $cities = City::whereIn('state_id', function($query) use ($countryId) {
+            $query->select('id')
+                  ->from('states')
+                  ->where('country_id', $countryId);
+        })->get();
+        
+        return view('settings.index',compact('countries','settings','cities','states'));
     }
 
-    public function fetchStates($id)
+    public function fetchStates($countryId)
     {
-        $states = State::where('country_id', $id)->get();
+        Log::info('Fetching states for country ID:', ['countryId' => $countryId]);
 
-        return response()->json([
-            'status' => true,
-            'states' =>$states
-        ]);
+        $states = State::where('country_id', $countryId)
+        ->pluck('name', 'id');
+
+        Log::info('States fetched:', ['states' => $states]);
+
+        return response()->json(['states' => $states]);
     }
-    public function fetchCities($id) {
-        $cities = City::where('state_id',$id)->get();
+    public function fetchCities($stateId) {
+        Log::info('Fetching cities for state ID:', ['stateId' => $stateId]);
 
-        return response()->json([
-            'status' => true,
-            'cities' =>$cities
-        ]);
+        $cities = City::where('state_id', $stateId)
+                  ->pluck('name', 'id');
+
+        Log::info('Cities fetched:', ['cities' => $cities]);
+
+        return response()->json(['cities' => $cities]);
     }
 
     public function updateSettings(Request $request) {
@@ -50,13 +63,14 @@ class SettingsController extends Controller
         'Address' => 'required',
         'invoice-prefix' => 'required|string',
         'GST-NO' =>  ['nullable', new GstNumber],
-        'city' => 'nullable',
-        'state-code' => 'nullable',
+        'city' => 'nullable|required_with:state-code',
+        'state-code' => 'nullable|required_with:country-code',
         'country-name' => 'nullable',
         ];
 
         $validator = Validator::make($request->all(),$rules);
         if($validator->fails()) {
+            // Session::flash('error', 'Failed to update company settings.');
             return redirect()->back()->withErrors($validator)->withInput();
         }
         $input = $request->except('_token', 'search_terms');

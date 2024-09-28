@@ -149,9 +149,10 @@ Add Employee
                 <label for="country" class="form-label">Country</label>
                 <div class="mb-3">
                   <select class="form-control @error('country') is-invalid @enderror" name="country" id="country">
+                    <option value="">Select Country</option>
                     @foreach ($countries as $country)
-            <option value="{{ $country->id }}">{{ $country->name }}</option>
-          @endforeach
+                      <option value="{{ $country->id }}">{{ $country->name }}</option>
+                    @endforeach
                   </select>
                   @error('country')
                   <div class="invalid-feedback">
@@ -166,10 +167,11 @@ Add Employee
                 <label for="state" class="form-label">State</label>
                 <div class="mb-3">
                   <select class="form-control @error('state') is-invalid @enderror" name="state" id="state">
+                    <option value="">Select state</option>
                   </select>
                   @error('state')
-            <div class="invalid-feedback"></div>
-          @enderror
+                    <div class="invalid-feedback"></div>
+                  @enderror
                 </div>
               </div>
             </div>
@@ -178,12 +180,13 @@ Add Employee
                 <label for="city" class="form-label">City</label>
                 <div class="mb-3">
                   <select class="form-control @error('city') is-invalid @enderror" name="city" id="city">
+                  <option value="">Select city</option>
                   </select>
                   @error('city')
-            <div class="invalid-feedback">
-              {{ $message }}
-            </div>
-          @enderror
+                    <div class="invalid-feedback">
+                      {{ $message }}
+                    </div>
+                  @enderror
                 </div>
               </div>
             </div>
@@ -399,77 +402,52 @@ Add Employee
     $('#role').select2();
 
     $('#country').change(function () {
-      fetchStates($(this).val());
-    });
+            var countryId = $(this).val();
+            console.log('Selected Country ID:', countryId); // Debugging statement
+            $('#state').empty().append('<option value="">Select State</option>');
+            $('#city').empty().append('<option value="">Select City</option>');
 
-    $('#state').change(function () {
-      fetchCities($(this).val());
-    });
+            if (countryId) {
+                $.ajax({
+                    url: '{{ route('fetch.states', ':id') }}'.replace(':id', countryId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('States Data:', data); // Debugging statement
+                        $('#state').empty().append('<option value="">Select State</option>');
+                        $.each(data.states, function (key, state) {
+                            $('#state').append('<option value="' + key + '">' + state + '</option>');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
 
-    function fetchStates(countryId) {
-      const fetchRoute = "{{ route('fetch.states', ':countryId') }}".replace(":countryId", countryId);
-      $.ajax({
-        url: fetchRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          $('#state').empty();
-          response.states.forEach(state => {
-            $('#state').append(new Option(state.name, state.id));
-          });
-          $('#state').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
+        $('#state').change(function () {
+            var stateId = $(this).val();
+            console.log('Selected State ID:', stateId); // Debugging statement
+            $('#city').empty().append('<option value="">Select City</option>');
 
-    function fetchCities(stateId) {
-      const fetchCitiesRoute = "{{ route('fetch.cities', ':stateId') }}".replace(':stateId', stateId);
-      $.ajax({
-        url: fetchCitiesRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          console.log('Cities fetched:', response.cities);
-          $('#city').empty();
-          response.cities.forEach(city => {
-            $('#city').append(new Option(city.name, city.id));
-          });
-          $('#city').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
+            if (stateId) {
+                $.ajax({
+                    url: '{{ route('fetch.cities', ':id') }}'.replace(':id', stateId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('Cities Data:', data); // Debugging statement
+                        $('#city').empty().append('<option value="">Select City</option>');
+                        $.each(data.cities, function (key, city) {
+                            $('#city').append('<option value="' + key + '">' + city + '</option>');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
 
-    function initializeSelect2() {
-      var initialCountryId = $('#country').val();
-      var initialStateId = $('#state').val();
-      var initialCityId = $('#city').val();
-
-      if (initialCountryId) {
-        fetchStates(initialCountryId);
-      }
-
-      // Ensure cities are fetched only after states are loaded
-      $('#state').one('change', function () {
-        if (initialStateId) {
-          fetchCities(initialStateId);
-        }
-        if (initialCityId) {
-          $('#city').val(initialCityId).trigger('change');
-        }
-      });
-
-      if (initialStateId) {
-        $('#state').val(initialStateId).trigger('change');
-      }
-    }
-
-    initializeSelect2();
   });
 </script>
 @endsection

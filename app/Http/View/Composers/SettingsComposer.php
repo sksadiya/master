@@ -23,7 +23,7 @@ class SettingsComposer
          // Add state and country names to settings array
          $this->settings['state'] = $state ? $state->name : '';
          $this->settings['country'] = $country ? $country->name : '';
-         $this->settings['city'] = $country ? $city->name : '';
+         $this->settings['city'] = $city ? $city->name : '';
     }
 
     public function compose(View $view)

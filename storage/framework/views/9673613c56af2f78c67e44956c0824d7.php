@@ -348,77 +348,51 @@ unset($__errorArgs, $__bag); ?>
     $('#service_categories').select2();
 
     $('#country-name').change(function () {
-      fetchStates($(this).val());
-    });
+            var countryId = $(this).val();
+            console.log('Selected Country ID:', countryId); // Debugging statement
+            $('#state-code').empty().append('<option value="">Select State</option>');
+            $('#city').empty().append('<option value="">Select City</option>');
 
-    $('#state-code').change(function () {
-      fetchCities($(this).val());
-    });
+            if (countryId) {
+                $.ajax({
+                    url: '<?php echo e(route('fetch.states', ':id')); ?>'.replace(':id', countryId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('States Data:', data); // Debugging statement
+                        $('#state-code').empty().append('<option value="">Select State</option>');
+                        $.each(data.states, function (key, state) {
+                            $('#state-code').append('<option value="' + key + '">' + state + '</option>');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
 
-    function fetchStates(countryId) {
-      const fetchRoute = "<?php echo e(route('fetch.states', ':countryId')); ?>".replace(":countryId", countryId);
-      $.ajax({
-        url: fetchRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          $('#state-code').empty();
-          response.states.forEach(state => {
-            $('#state-code').append(new Option(state.name, state.id));
-          });
-          $('#state-code').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
+        $('#state-code').change(function () {
+            var stateId = $(this).val();
+            console.log('Selected State ID:', stateId); // Debugging statement
+            $('#city').empty().append('<option value="">Select City</option>');
 
-    function fetchCities(stateId) {
-      const fetchCitiesRoute = "<?php echo e(route('fetch.cities', ':stateId')); ?>".replace(':stateId', stateId);
-      $.ajax({
-        url: fetchCitiesRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          console.log('Cities fetched:', response.cities);
-          $('#city').empty();
-          response.cities.forEach(city => {
-            $('#city').append(new Option(city.name, city.id));
-          });
-          $('#city').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function initializeSelect2() {
-      var initialCountryId = $('#country-name').val();
-      var initialStateId = $('#state-code').val();
-      var initialCityId = $('#city').val();
-
-      if (initialCountryId) {
-        fetchStates(initialCountryId);
-      }
-
-      // Ensure cities are fetched only after states are loaded
-      $('#state-code').one('change', function() {
-        if (initialStateId) {
-          fetchCities(initialStateId);
-        }
-        if (initialCityId) {
-          $('#city').val(initialCityId).trigger('change');
-        }
-      });
-
-      if (initialStateId) {
-        $('#state-code').val(initialStateId).trigger('change');
-      }
-    }
-
-    initializeSelect2();
+            if (stateId) {
+                $.ajax({
+                    url: '<?php echo e(route('fetch.cities', ':id')); ?>'.replace(':id', stateId),
+                    type: 'GET',
+                    success: function (data) {
+                        console.log('Cities Data:', data); // Debugging statement
+                        $('#city').empty().append('<option value="">Select City</option>');
+                        $.each(data.cities, function (key, city) {
+                            $('#city').append('<option value="' + key + '">' + city + '</option>');
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('AJAX Error:', xhr.responseText); // Debugging statement
+                    }
+                });
+            }
+        });
   });
 </script>
 <?php $__env->stopSection(); ?>

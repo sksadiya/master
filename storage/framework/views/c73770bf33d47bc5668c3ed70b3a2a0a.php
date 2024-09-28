@@ -50,12 +50,12 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="company-name"
                   placeholder="company name" value="<?php echo e($settings['company-name']); ?>" name="company-name">
-                  <?php if($errors->has('company-name')): ?>
-                    <div class="invalid-feedback">
-                      <?php echo e($errors->first('company-name')); ?>
+                <?php if($errors->has('company-name')): ?>
+          <div class="invalid-feedback">
+            <?php echo e($errors->first('company-name')); ?>
 
-                    </div>
-                  <?php endif; ?>
+          </div>
+        <?php endif; ?>
               </div>
             </div>
             <div class="col-md-6">
@@ -70,12 +70,12 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" id="company-email"
                   placeholder="Company Email" value="<?php echo e($settings['company-email']); ?>" name="company-email">
-                  <?php if($errors->has('company-email')): ?>
-                    <div class="invalid-feedback">
-                      <?php echo e($errors->first('company-email')); ?>
+                <?php if($errors->has('company-email')): ?>
+          <div class="invalid-feedback">
+            <?php echo e($errors->first('company-email')); ?>
 
-                    </div>
-                  <?php endif; ?>
+          </div>
+        <?php endif; ?>
               </div>
             </div>
             <div class="col-lg-6">
@@ -118,7 +118,14 @@ unset($__errorArgs, $__bag); ?>" id="company-phone"
               <div class="mb-3">
                 <label for="country-name" class="form-label">Country</label>
                 <div class="mb-3">
-                  <select class="form-control" name="country-name" id="country-name">
+                  <select class="form-control <?php $__errorArgs = ['country-name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="country-name" id="country-name">
                     <option value="">Select Country</option>
                     <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <option value="<?php echo e($country->id); ?>" <?php echo e(($settings['country-name'] && $settings['country-name'] == $country->id) ? 'selected' : ''); ?>>
@@ -127,6 +134,12 @@ unset($__errorArgs, $__bag); ?>" id="company-phone"
             </option>
           <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
+                  <?php if($errors->has('country-name')): ?>
+          <div class="invalid-feedback">
+            <?php echo e($errors->first('country-name')); ?>
+
+          </div>
+        <?php endif; ?>
                 </div>
               </div>
             </div>
@@ -134,8 +147,27 @@ unset($__errorArgs, $__bag); ?>" id="company-phone"
               <div class="mb-3">
                 <label for="state-code" class="form-label">State</label>
                 <div class="mb-3">
-                  <select class="form-control" name="state-code" id="state-code">
+                  <select class="form-control <?php $__errorArgs = ['state-code'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="state-code" id="state-code">
+                    <?php $__currentLoopData = $states; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $state): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($state->id); ?>" <?php echo e(($settings['state-code'] && $settings['state-code'] == $state->id) ? 'selected' : ''); ?>>
+              <?php echo e($state->name); ?>
+
+            </option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
+                  <?php if($errors->has('state-code')): ?>
+          <div class="invalid-feedback">
+            <?php echo e($errors->first('state-code')); ?>
+
+          </div>
+        <?php endif; ?>
                 </div>
               </div>
             </div>
@@ -144,8 +176,27 @@ unset($__errorArgs, $__bag); ?>" id="company-phone"
               <div class="mb-3">
                 <label for="city" class="form-label">City</label>
                 <div class="mb-3">
-                  <select class="form-control" name="city" id="city">
+                  <select class="form-control <?php $__errorArgs = ['city'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="city" id="city-code">
+                  <?php $__currentLoopData = $cities; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($city->id); ?>" <?php echo e(($settings['city'] && $settings['city'] == $city->id) ? 'selected' : ''); ?>>
+              <?php echo e($city->name); ?>
+
+            </option>
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </select>
+                  <?php if($errors->has('city')): ?>
+          <div class="invalid-feedback">
+            <?php echo e($errors->first('city')); ?>
+
+          </div>
+        <?php endif; ?>
                 </div>
               </div>
             </div>
@@ -200,8 +251,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" id="invoice-prefix"
-                  placeholder="Invoice prefix" value="<?php echo e($settings['invoice-prefix']); ?>" name="invoice-prefix">
+unset($__errorArgs, $__bag); ?>"
+                  id="invoice-prefix" placeholder="Invoice prefix" value="<?php echo e($settings['invoice-prefix']); ?>"
+                  name="invoice-prefix">
                 <?php if($errors->has('invoice-prefix')): ?>
           <div class="invalid-feedback">
             <?php echo e($errors->first('invoice-prefix')); ?>
@@ -347,83 +399,56 @@ unset($__errorArgs, $__bag); ?>" id="Copyright"
   <?php endif; ?>
 
     $('#state-code').select2();
-    $('#city').select2();
+    $('#city-code').select2();
     $('#country-name').select2();
     $('#country-code').select2();
 
     $('#country-name').change(function () {
-      fetchStates($(this).val());
+      var countryId = $(this).val();
+      console.log('Selected Country ID:', countryId); // Debugging statement
+      $('#state-code').empty().append('<option value="">Select State</option>');
+      $('#city-code').empty().append('<option value="">Select City</option>');
+
+      if (countryId) {
+        $.ajax({
+          url: '<?php echo e(route('fetch.states', ':id')); ?>'.replace(':id', countryId),
+          type: 'GET',
+          success: function (data) {
+            console.log('States Data:', data); // Debugging statement
+            $('#state-code').empty().append('<option value="">Select State</option>');
+            $.each(data.states, function (key, state) {
+              $('#state-code').append('<option value="' + key + '">' + state + '</option>');
+            });
+          },
+          error: function (xhr) {
+            console.error('AJAX Error:', xhr.responseText); // Debugging statement
+          }
+        });
+      }
     });
 
     $('#state-code').change(function () {
-      fetchCities($(this).val());
+      var stateId = $(this).val();
+      console.log('Selected State ID:', stateId); // Debugging statement
+      $('#city-code').empty().append('<option value="">Select City</option>');
+
+      if (stateId) {
+        $.ajax({
+          url: '<?php echo e(route('fetch.cities', ':id')); ?>'.replace(':id', stateId),
+          type: 'GET',
+          success: function (data) {
+            console.log('Cities Data:', data); // Debugging statement
+            $('#city-code').empty().append('<option value="">Select City</option>');
+            $.each(data.cities, function (key, city) {
+              $('#city-code').append('<option value="' + key + '">' + city + '</option>');
+            });
+          },
+          error: function (xhr) {
+            console.error('AJAX Error:', xhr.responseText); // Debugging statement
+          }
+        });
+      }
     });
-
-    function fetchStates(countryId) {
-      const fetchRoute = "<?php echo e(route('fetch.states', ':countryId')); ?>".replace(":countryId", countryId);
-      $.ajax({
-        url: fetchRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          $('#state-code').empty();
-          response.states.forEach(state => {
-            $('#state-code').append(new Option(state.name, state.id, state.id == "<?php echo e($settings['state-code']); ?>", state.id == "<?php echo e($settings['state-code']); ?>"));
-          });
-          $('#state-code').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function fetchCities(stateId) {
-      const fetchCitiesRoute = "<?php echo e(route('fetch.cities', ':stateId')); ?>".replace(':stateId', stateId);
-      $.ajax({
-        url: fetchCitiesRoute,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          // console.log('Cities fetched:', response.cities);
-          $('#city').empty();
-          response.cities.forEach(city => {
-            $('#city').append(new Option(city.name, city.id, city.id == "<?php echo e($settings['city']); ?>", city.id == "<?php echo e($settings['city']); ?>"));
-          });
-          $('#city').trigger('change');
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function initializeSelect2() {
-      var initialCountryId = $('#country-name').val();
-      var initialStateId = "<?php echo e($settings['state-code']); ?>";
-      var initialCityId = "<?php echo e($settings['city']); ?>";
-
-      if (initialCountryId) {
-        fetchStates(initialCountryId);
-      }
-
-      // Ensure cities are fetched only after states are loaded
-      $('#state-code').one('change', function () {
-        if (initialStateId) {
-          fetchCities(initialStateId);
-        }
-        if (initialCityId) {
-          $('#city').val(initialCityId).trigger('change');
-        }
-      });
-
-      if (initialStateId) {
-        $('#state-code').val(initialStateId).trigger('change');
-      }
-    }
-
-    initializeSelect2();
-
   });
 </script>
 

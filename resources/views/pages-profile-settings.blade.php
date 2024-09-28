@@ -60,16 +60,14 @@
     <!--end col-->
     <div class="col-xxl-9">
         <div class="card ">
-            <div id="alert-container">
-                @if(Session::has('message'))
-                    <div class="alert {{ Session::get('alert-class', 'alert-info') }} alert-dismissible fade show"
-                        role="alert">
-                        {{ Session::get('message') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
+            <div id="alert-container" class="p-3">
+            @if(Session::has('message'))
+                <div class="alert border-0 alert-primary material-shadow" role="alert">
+                {{ Session::get('message') }}
+                </div>
+            @endif
             </div>
-            <div class="card-header">
+            <div class="card-header ">
                 <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab">
