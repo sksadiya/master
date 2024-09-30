@@ -54,6 +54,13 @@
                     </a>
                 </li>
                 <?php endif; ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View project')): ?>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="<?php echo e(route('projects')); ?>" >
+                    <i class="fas fa-layer-group"></i> <span>Projects</span>
+                    </a>
+                </li>
+                <?php endif; ?>
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('View Departments')): ?>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="<?php echo e(route('departments')); ?>" >

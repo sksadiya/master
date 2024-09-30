@@ -129,6 +129,9 @@ class RolesAndPermissions extends Controller
         'Expenses' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Expenses');
         }),
+        'project' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'project');
+        }),
       
     ];
         // $permissions = Permission::all();
@@ -215,6 +218,10 @@ class RolesAndPermissions extends Controller
         'Expenses' => $allPermissions->filter(function ($permission) {
             return str_contains($permission->name, 'Expenses');
         }),
+        'project' => $allPermissions->filter(function ($permission) {
+            return str_contains($permission->name, 'project');
+        }),
+       
     ];
         return view('roles.edit', compact('permissions', 'role'));
     }

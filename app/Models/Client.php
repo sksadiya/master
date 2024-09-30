@@ -32,5 +32,9 @@ class Client extends Model
     {
         return $this->belongsToMany(serviceCategory::class, 'client_service', 'client_id', 'service_category_id');
     }
-   
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+    
 }

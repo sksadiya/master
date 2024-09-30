@@ -274,11 +274,28 @@ Route::get('expense/{id}', [App\Http\Controllers\ExpenseController::class, 'show
 
 Route::get('/generate-pdf/{id}', [App\Http\Controllers\Invoices::class, 'generatePDF'])->name('generate');
 
+Route::group(['middleware' => ['permission:View project']], function () {
+  Route::get('projects/data', [App\Http\Controllers\ProjectController::class, 'getprojects'])->name('projects.data');
+  Route::get('projects', [App\Http\Controllers\ProjectController::class, 'index'])->name('projects');
+  });
+  Route::group(['middleware' => ['permission:Add project']], function () {
+    Route::get('project/add', [App\Http\Controllers\ProjectController::class, 'create'])->name('project.add');
+    Route::post('project/store', [App\Http\Controllers\ProjectController::class, 'store'])->name('project.store');
+    });
+    Route::group(['middleware' => ['permission:Edit project']], function () {
+    Route::get('/project/{id}', [App\Http\Controllers\ProjectController::class, 'edit'])->name('project.edit');
+    Route::post('/project/{id}', [App\Http\Controllers\ProjectController::class, 'update'])->name('project.update');
+    });
+    Route::group(['middleware' => ['permission:Delete project']], function () {
+    Route::delete('/project/{id}', [App\Http\Controllers\ProjectController::class, 'destroy'])->name('project.delete');
+    });
+
 
 Route::group(['middleware' => ['permission:View serviceCategories']], function () {
 Route::get('serviceCategories/data', [App\Http\Controllers\serviceCategoryController::class, 'getServiceCategories'])->name('serviceCategories.data');
 Route::get('serviceCategories', [App\Http\Controllers\serviceCategoryController::class, 'index'])->name('serviceCategories');
 });
+
 Route::group(['middleware' => ['permission:Add serviceCategories']], function () {
 Route::post('serviceCategories', [App\Http\Controllers\serviceCategoryController::class, 'store'])->name('serviceCategory.add');
 });

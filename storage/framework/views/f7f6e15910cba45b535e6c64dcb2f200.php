@@ -783,7 +783,7 @@ unset($__errorArgs, $__bag); ?>
                         $.each(data.cities, function (key, city) {
                             $('#city').append('<option value="' + key + '">' + city + '</option>');
                         });
-                        $('#city').val('<?php echo e($employee->city_id); ?>').change();
+                        $('#city').val('<?php echo e($employee->city_id); ?>');
                     },
                     error: function (xhr) {
                         console.error('AJAX Error:', xhr.responseText); // Debugging statement

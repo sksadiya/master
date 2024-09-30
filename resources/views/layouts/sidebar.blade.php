@@ -54,6 +54,13 @@
                     </a>
                 </li>
                 @endcan
+                @can('View project')
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('projects') }}" >
+                    <i class="fas fa-layer-group"></i> <span>Projects</span>
+                    </a>
+                </li>
+                @endcan
                 @can('View Departments')
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="{{ route('departments') }}" >
