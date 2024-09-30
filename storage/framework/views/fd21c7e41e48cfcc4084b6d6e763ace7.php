@@ -315,7 +315,34 @@ endif;
 unset($__errorArgs, $__bag); ?>
               </div>
             </div><!--end col-->
+            <div class="col-lg-3 col-sm-6">
+              <label for="select-project">Project </label>
+              <div class="input-light">
+                <select class="form-control bg-light border-0 <?php $__errorArgs = ['project'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                  name="project" id="select-project">
+                </select>
+                <?php $__errorArgs = ['project'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+          <div class="invalid-feedback">
+            <?php echo e($message); ?>
 
+          </div>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+              </div>
+            </div><!--end col-->
           </div><!--end row-->
         </div>
         <div class="card-body p-4 border-top border-top-dashed">
@@ -1023,7 +1050,7 @@ unset($__errorArgs, $__bag); ?>
 <script src="<?php echo e(URL::asset('build/libs/sweetalert2/sweetalert2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/select2/js/select2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
-<script>
+<!-- <script>
   $(document).ready(function () {
     var count = 1;
 
@@ -1256,6 +1283,208 @@ unset($__errorArgs, $__bag); ?>
       $('#billingEmail').val(client.email);
     }
   });
+</script> -->
+
+<script>
+   $(document).ready(function () {
+    $('select').select2();
+    var count = 0;
+    function new_link() {
+      count++; 
+      var tr1 = document.createElement("tr");
+      tr1.id = "product-" + count; 
+      tr1.className = "product-row";
+      var productId = '<span class="product-id">' + count + '</span>';
+      var delLink =
+        '<th scope="row" class="product-item-id">' + count + '</th>' +
+        '<td class="text-start">' +
+        '<div class="mb-2">' +
+        '<div class="input-light">' +
+        '<select class="form-control bg-light border-0 select-product-item" name="product_id[]">' +
+        '<?php if($products): ?>' +
+      '<?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>' +
+      '<option value="<?php echo e($product->id); ?>" data-product-id="<?php echo e($product->id); ?>" data-product-price="<?php echo e($product->unit_price); ?>" data-product-name="<?php echo e($product->name); ?>" ><?php echo e($product->name); ?></option>' +
+    '<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>' +
+    '<?php endif; ?>' +
+        '</select>' +
+        '</div>' +
+        '</div>' +
+        '</td>' +
+        '<td>' +
+        '<input class="form-control bg-light border-0 product-price productRate" name="product_rate[]"  type="number" id="productRate-' + count + '" step="0.01" placeholder="₹0.00">' +
+        '</td>' +
+        '<td>' +
+        '<div class="input-step">' +
+        '<button type="button" class="minus">–</button>' +
+        '<input type="number" name="product_qty[]" class="product-quantity product-qty" id="product-qty-' + count + '" value="1" readonly>' +
+        '<button type="button" class="plus">+</button>' +
+        '</div>' +
+        '</td>' +
+        '<td class="text-end">' +
+        '<div>' +
+        '<input type="text" name="product_item_total[]" readonly class="form-control bg-light border-0 product-line-price" id="productPrice-' + count + '"  placeholder="₹0.00" />' +
+        '</div>' +
+        '</td>' +
+        '<td class="product-removal">' +
+        '<a class="btn btn-success delete-row">Delete</a>' +
+        '</td>';
+
+      // Set the inner HTML of the new row
+      tr1.innerHTML = delLink;
+
+      // Append the new row to the target container with id 'newlink'
+      document.getElementById("newlink").appendChild(tr1);
+
+      // Initialize Select2 on the newly added select element
+      $('.select-product-item').select2(); // Ensure Select2 is properly included and initialized
+      var selectedPrice = $('#newlink').find('.select-product-item:last option:selected').data('product-price');
+      $('#productRate-' + count).val(selectedPrice.toFixed(2));
+      updateRate();
+      // Optional: Attach event handlers or perform other actions as needed
+    }
+
+    function updateRate() {
+      $('.product-row').each(function () {
+        var $row = $(this); // Current product row
+        // Find the select element within the current row
+        var selectedProductPrice = $row.find('.productRate').val();
+        // var selectedProductPrice = $row.find('.select-product-item').find(':selected').data('product-price');
+        var selectedProductID = $row.find('.select-product-item').find(':selected').data('product-id');
+
+        // Update elements within the current row
+        $row.find('.productRate').val(selectedProductPrice);
+        $row.find('.product-item-id').text(selectedProductID);
+
+        var quantity = parseInt($row.find('.product-qty').val());
+        var linePrice = selectedProductPrice * quantity;
+        $row.find('.product-line-price').val(linePrice.toFixed(2));
+      });
+    }
+
+    function updateSubtotal() {
+      var subtotal = 0;
+      var invoiceItems = [];
+
+      $('.product-row').each(function () {
+        var $row = $(this);
+        var productName = $row.find('.select-product-item').find(':selected').data('product-name');
+        var quantity = parseInt($row.find('.product-qty').val());
+        var linePrice = parseFloat($row.find('.product-line-price').val());
+        var productID = $row.find('.product-item-id').text();
+        var productPrice = $row.find('.productRate').val();
+        invoiceItems.push({
+          product_id: productID,
+          product_name: productName,
+          quantity: quantity,
+          price: productPrice,
+          total: linePrice
+        });
+      });
+      var invoiceItemsJSON = JSON.stringify(invoiceItems);
+      $('#invoiceItemsInput').val(invoiceItemsJSON);
+      console.log($('#invoiceItemsInput').val());
+      // Calculate subtotal
+      $('.product-line-price').each(function () {
+        var linePrice = parseFloat($(this).val());
+        if (!isNaN(linePrice)) {
+          subtotal += linePrice;
+        }
+      });
+
+      $('#invoice_subtotal').val(subtotal.toFixed(2));
+
+      // Calculate discount
+      var discountValue = parseFloat($('#discount').val());
+      var discountType = $('#discount_type').val();
+      var discountAmount = 0;
+      if (discountType === 'Fixed' && discountValue) {
+        discountAmount = discountValue;
+      } else if (discountType === 'Percentage' && discountValue) {
+        if (discountValue < 0 || discountValue > 100) {
+          $('#discount').addClass('is-invalid');
+          $('#discount').next('.invalid-feedback').text('Discount percentage must be between 0 and 100.');
+        } else {
+          $('#discount').removeClass('is-invalid');
+          $('#discount').next('.invalid-feedback').text('');
+          discountAmount = subtotal * (discountValue / 100);
+        }
+      }
+
+      $('#cart_discount').val(discountAmount.toFixed(2));
+
+      // Calculate tax based on subtotal after discount
+      var discountedSubtotal = subtotal - discountAmount;
+      var selectedTaxRate = $('#taxes').find(':selected').data('tax-value');
+      var selectedTaxId = $('#taxes').val();
+      $('#default_tax_name').val(selectedTaxRate);
+      $('#default_tax_id').val(selectedTaxId);
+      $('#tax-table-head').text('Tax (' + selectedTaxRate + '%)');
+      var taxAmount = discountedSubtotal * (selectedTaxRate / 100);
+      $('#cart_tax').val(taxAmount.toFixed(2));
+
+      // Calculate total after tax and discount
+      var totalAmount = discountedSubtotal + taxAmount;
+      $('#cart-total').val(totalAmount.toFixed(2));
+    }
+
+    updateRate();
+    updateSubtotal();
+    $('select').select2();
+    $('#add-item').click(function () {
+      new_link(); // Call the function to add a new row
+      updateRate();
+      updateSubtotal();
+    });
+
+    $('#newlink').on('click', '.plus', function () {
+      var qtyInput = $(this).siblings('.product-qty');
+      var currentVal = parseInt(qtyInput.val());
+      if (currentVal < 10) {
+        qtyInput.val(currentVal + 1);
+      }
+      updateRate();
+      updateSubtotal();
+
+    });
+
+    // Handle the minus button click
+    $('#newlink').on('click', '.minus', function () {
+      var qtyInput = $(this).siblings('.product-qty');
+      var currentVal = parseInt(qtyInput.val());
+      if (currentVal > 1) {
+        qtyInput.val(currentVal - 1);
+      }
+      updateRate();
+      updateSubtotal();
+
+    });
+
+    $('#newlink').on('click', '.delete-row', function () {
+      $(this).closest('tr').remove(); // Remove the closest <tr> element
+      updateSubtotal();
+    });
+    $(document).on('change', '.select-product-item', function () {
+      var $row = $(this).closest('.product-row'); // Get the current row
+      var selectedProductPrice = $(this).find(':selected').data('product-price'); // Get the selected product price
+      $row.find('.productRate').val(selectedProductPrice); // Update the product rate input field
+      updateRate();
+      updateSubtotal();
+    });
+    $(document).on('change', '#taxes', function () {
+      updateRate();
+      updateSubtotal();
+
+    });
+    $(document).on('change', '.productRate', function () {
+      updateRate();
+      updateSubtotal();
+
+    });
+    $('#discount, #discount_type').change(function () {
+      updateSubtotal();
+    });
+    <?php echo $__env->make('invoices.updateClientInfo', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+   });
 </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\master\resources\views/invoices/edit.blade.php ENDPATH**/ ?>

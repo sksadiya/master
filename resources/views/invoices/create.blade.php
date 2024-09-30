@@ -160,6 +160,20 @@
         @enderror
               </div>
             </div><!--end col-->
+            <div class="col-lg-3 col-sm-6">
+              <label for="select-project">Project </label>
+              <div class="input-light">
+                <select class="form-control bg-light border-0 @error('project') is-invalid @enderror"
+                  name="project" id="select-project">
+                  
+                </select>
+                @error('project')
+          <div class="invalid-feedback">
+            {{ $message }}
+          </div>
+        @enderror
+              </div>
+            </div><!--end col-->
 
           </div><!--end row-->
         </div>
@@ -266,6 +280,7 @@
                           class="form-control bg-light border-0 select-product-item @error('product_id') is-invalid @enderror"
                           name="product_id[]">
                           @if ($products)
+                          <option value="">Select Product</option>
                 @foreach ($products as $product)
           <option value="{{$product->id}}" data-product-id="{{$product->id}}"
           data-product-price="{{ $product->unit_price }}" data-product-name="{{ $product->name}}">
@@ -283,7 +298,7 @@
                     </div>
                   </td>
                   <td>
-                    <input type="number" readonly
+                    <input type="number" 
                       class="form-control product-price bg-light border-0 productRate @error('product_rate') is-invalid @enderror"
                       id="productRate" name="product_rate[]" step="0.01" placeholder="₹0.00" />
                     @error('product_rate')
@@ -500,21 +515,17 @@
 <script src="{{ URL::asset('build/select2/js/select2.min.js') }}"></script>
 <script src="{{ URL::asset('build/js/app.js') }}"></script>
 <script>
-  $(document).ready(function () {
-    var count = 1;
-
-
+   $(document).ready(function () {
+    $('select').select2();
+    var count = 0;
     function new_link() {
-      count++; // Increment count or initialize it as needed
-
-      // Create a new table row element
+      count++; 
       var tr1 = document.createElement("tr");
-      tr1.id = "product-" + count; // Set a unique ID for the new row
+      tr1.id = "product-" + count; 
       tr1.className = "product-row";
-
-      // Construct the HTML for the new row
+      var productId = '<span class="product-id">' + count + '</span>';
       var delLink =
-        '<th scope="row" class="product-item-id"></th>' +
+        '<th scope="row" class="product-item-id">' + count + '</th>' +
         '<td class="text-start">' +
         '<div class="mb-2">' +
         '<div class="input-light">' +
@@ -529,7 +540,7 @@
         '</div>' +
         '</td>' +
         '<td>' +
-        '<input class="form-control bg-light border-0 product-price productRate" name="product_rate[]" readonly type="number" id="productRate-' + count + '" step="0.01" placeholder="₹0.00">' +
+        '<input class="form-control bg-light border-0 product-price productRate" name="product_rate[]"  type="number" id="productRate-' + count + '" step="0.01" placeholder="₹0.00">' +
         '</td>' +
         '<td>' +
         '<div class="input-step">' +
@@ -555,15 +566,18 @@
 
       // Initialize Select2 on the newly added select element
       $('.select-product-item').select2(); // Ensure Select2 is properly included and initialized
+      var selectedPrice = $('#newlink').find('.select-product-item:last option:selected').data('product-price');
+      $('#productRate-' + count).val(selectedPrice.toFixed(2));
       updateRate();
       // Optional: Attach event handlers or perform other actions as needed
     }
+
     function updateRate() {
       $('.product-row').each(function () {
         var $row = $(this); // Current product row
-
         // Find the select element within the current row
-        var selectedProductPrice = $row.find('.select-product-item').find(':selected').data('product-price');
+        var selectedProductPrice = $row.find('.productRate').val();
+        // var selectedProductPrice = $row.find('.select-product-item').find(':selected').data('product-price');
         var selectedProductID = $row.find('.select-product-item').find(':selected').data('product-id');
 
         // Update elements within the current row
@@ -575,6 +589,7 @@
         $row.find('.product-line-price').val(linePrice.toFixed(2));
       });
     }
+
     function updateSubtotal() {
       var subtotal = 0;
       var invoiceItems = [];
@@ -640,6 +655,7 @@
       var totalAmount = discountedSubtotal + taxAmount;
       $('#cart-total').val(totalAmount.toFixed(2));
     }
+
     updateRate();
     updateSubtotal();
     $('select').select2();
@@ -677,11 +693,18 @@
       updateSubtotal();
     });
     $(document).on('change', '.select-product-item', function () {
+      var $row = $(this).closest('.product-row'); // Get the current row
+      var selectedProductPrice = $(this).find(':selected').data('product-price'); // Get the selected product price
+      $row.find('.productRate').val(selectedProductPrice); // Update the product rate input field
+      updateRate();
+      updateSubtotal();
+    });
+    $(document).on('change', '#taxes', function () {
       updateRate();
       updateSubtotal();
 
     });
-    $(document).on('change', '#taxes', function () {
+    $(document).on('change', '.productRate', function () {
       updateRate();
       updateSubtotal();
 
@@ -689,47 +712,8 @@
     $('#discount, #discount_type').change(function () {
       updateSubtotal();
     });
-    $('#clientName').change(function () {
-      console.log($(this).val());
-      fetchClient($(this).val());
-    });
-
-    function fetchClient(clientId) {
-      const fetchClientWithId = "{{ route('fetch.client', ':clientId') }}".replace(':clientId', clientId);
-      $.ajax({
-        url: fetchClientWithId,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          if (response && response.client && response.client.length > 0) {
-            const client = response.client[0];  // Get the first (and only) client object from the array
-            updateClientInfo(client);
-          } else {
-            console.error('Client data is not available in the response');
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function initializeSelect2() {
-      var initialClientId = $('#clientName').val();
-
-      if (initialClientId) {
-        fetchClient(initialClientId);
-      }
-    }
-    initializeSelect2();
-
-    function updateClientInfo(client) {
-      $('#billingName').val(client.first_name + ' ' + client.last_name);
-      $('#billingAddress').val(client.Address);
-      $('#billingPhoneno').val(client.contact);
-      $('#billingTaxno').val(client.GST);
-      $('#billingEmail').val(client.email);
-    }
-  });
+    @include('invoices.updateClientInfo')
+   });
 </script>
+
 @endsection

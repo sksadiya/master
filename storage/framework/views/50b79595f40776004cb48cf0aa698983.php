@@ -310,6 +310,35 @@ endif;
 unset($__errorArgs, $__bag); ?>
               </div>
             </div><!--end col-->
+            <div class="col-lg-3 col-sm-6">
+              <label for="select-project">Project <span class="text-danger">*</span></label>
+              <div class="input-light">
+                <select class="form-control bg-light border-0 <?php $__errorArgs = ['project'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                  name="project" id="select-project">
+                  
+                </select>
+                <?php $__errorArgs = ['project'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+          <div class="invalid-feedback">
+            <?php echo e($message); ?>
+
+          </div>
+        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+              </div>
+            </div><!--end col-->
 
           </div><!--end row-->
         </div>
@@ -498,6 +527,7 @@ endif;
 unset($__errorArgs, $__bag); ?>"
                           name="product_id[]">
                           <?php if($products): ?>
+                          <option value="">Select Product</option>
                 <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
           <option value="<?php echo e($product->id); ?>" data-product-id="<?php echo e($product->id); ?>"
           data-product-price="<?php echo e($product->unit_price); ?>" data-product-name="<?php echo e($product->name); ?>">
@@ -524,7 +554,7 @@ unset($__errorArgs, $__bag); ?>
                     </div>
                   </td>
                   <td>
-                    <input type="number" readonly
+                    <input type="number" 
                       class="form-control product-price bg-light border-0 productRate <?php $__errorArgs = ['product_rate'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -890,21 +920,17 @@ unset($__errorArgs, $__bag); ?>
 <script src="<?php echo e(URL::asset('build/select2/js/select2.min.js')); ?>"></script>
 <script src="<?php echo e(URL::asset('build/js/app.js')); ?>"></script>
 <script>
-  $(document).ready(function () {
-    var count = 1;
-
-
+   $(document).ready(function () {
+    $('select').select2();
+    var count = 0;
     function new_link() {
-      count++; // Increment count or initialize it as needed
-
-      // Create a new table row element
+      count++; 
       var tr1 = document.createElement("tr");
-      tr1.id = "product-" + count; // Set a unique ID for the new row
+      tr1.id = "product-" + count; 
       tr1.className = "product-row";
-
-      // Construct the HTML for the new row
+      var productId = '<span class="product-id">' + count + '</span>';
       var delLink =
-        '<th scope="row" class="product-item-id"></th>' +
+        '<th scope="row" class="product-item-id">' + count + '</th>' +
         '<td class="text-start">' +
         '<div class="mb-2">' +
         '<div class="input-light">' +
@@ -919,7 +945,7 @@ unset($__errorArgs, $__bag); ?>
         '</div>' +
         '</td>' +
         '<td>' +
-        '<input class="form-control bg-light border-0 product-price productRate" name="product_rate[]" readonly type="number" id="productRate-' + count + '" step="0.01" placeholder="₹0.00">' +
+        '<input class="form-control bg-light border-0 product-price productRate" name="product_rate[]"  type="number" id="productRate-' + count + '" step="0.01" placeholder="₹0.00">' +
         '</td>' +
         '<td>' +
         '<div class="input-step">' +
@@ -945,15 +971,18 @@ unset($__errorArgs, $__bag); ?>
 
       // Initialize Select2 on the newly added select element
       $('.select-product-item').select2(); // Ensure Select2 is properly included and initialized
+      var selectedPrice = $('#newlink').find('.select-product-item:last option:selected').data('product-price');
+      $('#productRate-' + count).val(selectedPrice.toFixed(2));
       updateRate();
       // Optional: Attach event handlers or perform other actions as needed
     }
+
     function updateRate() {
       $('.product-row').each(function () {
         var $row = $(this); // Current product row
-
         // Find the select element within the current row
-        var selectedProductPrice = $row.find('.select-product-item').find(':selected').data('product-price');
+        var selectedProductPrice = $row.find('.productRate').val();
+        // var selectedProductPrice = $row.find('.select-product-item').find(':selected').data('product-price');
         var selectedProductID = $row.find('.select-product-item').find(':selected').data('product-id');
 
         // Update elements within the current row
@@ -965,6 +994,7 @@ unset($__errorArgs, $__bag); ?>
         $row.find('.product-line-price').val(linePrice.toFixed(2));
       });
     }
+
     function updateSubtotal() {
       var subtotal = 0;
       var invoiceItems = [];
@@ -1030,6 +1060,7 @@ unset($__errorArgs, $__bag); ?>
       var totalAmount = discountedSubtotal + taxAmount;
       $('#cart-total').val(totalAmount.toFixed(2));
     }
+
     updateRate();
     updateSubtotal();
     $('select').select2();
@@ -1067,11 +1098,18 @@ unset($__errorArgs, $__bag); ?>
       updateSubtotal();
     });
     $(document).on('change', '.select-product-item', function () {
+      var $row = $(this).closest('.product-row'); // Get the current row
+      var selectedProductPrice = $(this).find(':selected').data('product-price'); // Get the selected product price
+      $row.find('.productRate').val(selectedProductPrice); // Update the product rate input field
+      updateRate();
+      updateSubtotal();
+    });
+    $(document).on('change', '#taxes', function () {
       updateRate();
       updateSubtotal();
 
     });
-    $(document).on('change', '#taxes', function () {
+    $(document).on('change', '.productRate', function () {
       updateRate();
       updateSubtotal();
 
@@ -1079,48 +1117,9 @@ unset($__errorArgs, $__bag); ?>
     $('#discount, #discount_type').change(function () {
       updateSubtotal();
     });
-    $('#clientName').change(function () {
-      console.log($(this).val());
-      fetchClient($(this).val());
-    });
-
-    function fetchClient(clientId) {
-      const fetchClientWithId = "<?php echo e(route('fetch.client', ':clientId')); ?>".replace(':clientId', clientId);
-      $.ajax({
-        url: fetchClientWithId,
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-          if (response && response.client && response.client.length > 0) {
-            const client = response.client[0];  // Get the first (and only) client object from the array
-            updateClientInfo(client);
-          } else {
-            console.error('Client data is not available in the response');
-          }
-        },
-        error: function (xhr, status, error) {
-          console.error('AJAX Error: ' + status + ' - ' + error);
-        }
-      });
-    }
-
-    function initializeSelect2() {
-      var initialClientId = $('#clientName').val();
-
-      if (initialClientId) {
-        fetchClient(initialClientId);
-      }
-    }
-    initializeSelect2();
-
-    function updateClientInfo(client) {
-      $('#billingName').val(client.first_name + ' ' + client.last_name);
-      $('#billingAddress').val(client.Address);
-      $('#billingPhoneno').val(client.contact);
-      $('#billingTaxno').val(client.GST);
-      $('#billingEmail').val(client.email);
-    }
-  });
+    <?php echo $__env->make('invoices.updateClientInfo', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+   });
 </script>
+
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\xampp\htdocs\master\resources\views/invoices/create.blade.php ENDPATH**/ ?>

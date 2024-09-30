@@ -229,6 +229,7 @@ Route::get('export-invoices', function () {
 Route::get('/states/{id}', [App\Http\Controllers\SettingsController::class, 'fetchStates'])->name('fetch.states');
 Route::get('/cities/{id}', [App\Http\Controllers\SettingsController::class, 'fetchCities'])->name('fetch.cities');
 Route::get('/clients/{id}', [App\Http\Controllers\Invoices::class, 'fetchClient'])->name('fetch.client');
+Route::get('/fetchProject/{id}', [App\Http\Controllers\ProjectController::class, 'fetchProject'])->name('fetch.project');
 
 Route::group(['middleware' => ['permission:View Payments']], function () { 
 Route::get('payments/data', [App\Http\Controllers\Payments::class, 'getPayments'])->name('payments.data');

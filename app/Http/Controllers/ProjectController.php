@@ -15,7 +15,7 @@ class ProjectController extends Controller
     }
 
     public function getprojects(Request $request) {
-        $query = Project::with('client')->latest();
+        $query = Project::latest();
     
         // Filtering
         if ($request->has('search') && !empty($request->get('search')['value'])) {
@@ -54,7 +54,7 @@ class ProjectController extends Controller
             'data' => $projects->map(function ($project) {
                 return [
                     'name' => $project->name,
-                    'client' => $project->client->first_name . ' ' . $project->client->last_name,
+                    'client' => $project->client->first_name,
                     'action' => $this->generateActions($project)
                 ];
             })
@@ -161,5 +161,15 @@ class ProjectController extends Controller
                 'message' => 'Failed to delete Project. Please try again.',
             ], 500);
         }
+    }
+
+    public function fetchProject($id)
+    {
+        $projects = Project::where('client_id', $id)->get();
+
+        return response()->json([
+            'status' => true,
+            'projects' => $projects
+        ]);
     }
 }

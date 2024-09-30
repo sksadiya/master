@@ -10,6 +10,7 @@ class Invoice extends Model
     use HasFactory;
     protected $fillable = [
         'client_id',
+        'project_id',
         'invoice_number',
         'invoice_date',
         'due_date',
@@ -43,4 +44,8 @@ class Invoice extends Model
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
+    public function project()
+{
+    return $this->belongsTo(Project::class ,'project_id');
+}
 }

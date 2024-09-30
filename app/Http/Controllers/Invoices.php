@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\invoiceItem;
 use App\Models\Product;
+use App\Models\Project;
 use App\Models\Setting;
 use App\Models\Tax;
 use App\Rules\GstNumber;
@@ -120,8 +121,9 @@ class Invoices extends Controller
         $clients = Client::all();
         $products = Product::all();
         $taxes = Tax::all();
+        // $projects = Project::all();
 
-        return view('invoices.create', compact('settings', 'clients', 'products', 'taxes', 'invoiceNumber', 'invoiceDate', 'dueDate'));
+        return view('invoices.create', compact('settings', 'clients', 'products', 'taxes', 'invoiceNumber', 'invoiceDate', 'dueDate' ));
     }
     public function fetchClient($id)
     {
@@ -159,7 +161,7 @@ class Invoices extends Controller
 
     public function store(Request $request)
     {
-        // $request = $request->except('_token');
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'invoicenoInput' => 'required|unique:invoices,invoice_number',
             'invoice_date' => 'required|date|after_or_equal:today',
@@ -176,7 +178,8 @@ class Invoices extends Controller
             'payment_type' => 'required|string',
             'notes' => 'nullable|min:10',
             'itemArray' => 'required|array',
-            'client' => 'required',
+            'client' => 'required|exists:clients,id',
+            'project' => 'nullable|exists:projects,id',
             'product_id' => 'required|array',
             'product_rate' => 'required|array',
             'product_qty' => 'required|array',
@@ -211,6 +214,7 @@ class Invoices extends Controller
             $invoice->note = $request->notes;
             $invoice->payment_method = $request->payment_type;
             $invoice->due_amount = $request->final_amount;
+            $invoice->project_id = $request->project;
             $invoice->save();
 
             Setting::where('key', 'Address')->update(['value' => $request->companyAddress]);
@@ -279,7 +283,7 @@ class Invoices extends Controller
 
     public function edit(Request $request, $id)
     {
-        $invoice = Invoice::with('items')->find($id);
+        $invoice = Invoice::with('items','client')->find($id);
 
         if (empty($invoice)) {
             Session::flash('error', 'No CLient found!');
@@ -319,7 +323,8 @@ class Invoices extends Controller
             'payment_type' => 'required|string',
             'notes' => 'nullable|min:10',
             'itemArray' => 'required|array',
-            'client' => 'required',
+            'client' => 'required|exists:clients,id',
+            'project' => 'nullable|exists:projects,id',
             'product_id' => 'required|array',
             'product_rate' => 'required|array',
             'product_qty' => 'required|array',
@@ -340,6 +345,7 @@ class Invoices extends Controller
         }
         if ($validator->passes()) {
             $invoice->client_id = $request->client;
+            $invoice->project_id = $request->project;
             $invoice->invoice_number = $request->invoicenoInput;
             $invoice->invoice_date = $request->invoice_date;
             $invoice->due_date = $request->due_date;

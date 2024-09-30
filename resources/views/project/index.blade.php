@@ -30,7 +30,7 @@ Projects
           </div>
 
           <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table align-middle table-nowrap" id="departmentTable">
+            <table class="table align-middle table-nowrap" id="projectTable">
               <thead class="table-light">
                 <tr>
                   <th>Projects</th>
@@ -112,7 +112,7 @@ Projects
     showCloseButton: true
     });
   @endif
-    $('#departmentTable').DataTable({
+    $('#projectTable').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
@@ -135,7 +135,7 @@ Projects
     pageLength: 10
 });
 
-    $('#departmentTable').on('click', '.remove-item-btn' ,function () {
+    $('#projectTable').on('click', '.remove-item-btn' ,function () {
       var deptId = $(this).data('id');
       $('#delete-record').data('id', deptId);
       $('#deleteRecordModal').modal('show');
